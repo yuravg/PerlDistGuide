@@ -1,0 +1,78 @@
+#!/usr/bin/env perl
+
+use warnings;
+use strict;
+
+use Getopt::Long;
+
+use Example::Hello;
+use Example::Bye;
+use Example::HowAreYou;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+# Available actions
+my %actions = (
+    hello => 'Example::Hello',
+    bye   => 'Example::Bye',
+    how   => 'Example::HowAreYou',
+);
+
+# Handle help option
+my $help;
+GetOptions('h|help' => \$help);
+
+
+# * Way-1: There is Default input arguemt
+
+if ($help) {
+    print "Usage: $0 [hello|bye|how]\n";
+    print "  hello - Say hello\n";
+    print "  bye   - Say goodbye\n";
+    print "  how   - Ask how are you\n";
+    exit 0;
+}
+
+# Get the first argument
+my $action = shift // '';
+
+# Determine the class
+my $class = $actions{$action} // 'Example::HowAreYou';
+
+# Create object and print message
+my $obj = $class->new;
+print $obj->message . "!\n";
+
+
+# * Way-2: There is not Default input arguemt
+
+# # Show help if no input is provided or if -h/--help is passed
+# if ($help || !@ARGV) {
+#     print "Usage: $0 [hello|bye|how]\n";
+#     print "  hello - Say hello\n";
+#     print "  bye   - Say goodbye\n";
+#     print "  how   - Ask how are you\n";
+#     exit 0;
+# }
+
+# # Get the first argument
+# my $action = shift;
+
+# Check if the action is valid, otherwise show help and exit
+# unless (exists $actions{$action}) {
+#     print "Error: Invalid argument '$action'\n";
+#     print "Use '$0 --help' to see available options.\n";
+#     exit 1;
+# }
+
+# * Way-3: A Pure style
+
+# my $action = shift // '';  # Get the first argument
+
+# my $class =
+#     $action eq 'hello' ? 'Example::Hello' :
+#     $action eq 'bye'   ? 'Example::Bye'   :
+#     'Example::HowAreYou';
+
+# my $obj = $class->new;
+# print $obj->message . "!\n";  # Append exclamation
