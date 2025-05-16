@@ -1,0 +1,1707 @@
+#+TITLE: Guide to creating Perl module distributions with Dist::Zilla.
+#+AUTHOR: Yuriy Gritsenko
+#+LINK: PerlDistGuide https://github.com/yuravg/PerlDistGuide
+
+#+begin_quote
+Dist::Zilla is a powerful tool that simplifies the process of creating, testing, and
+distributing Perl modules and distributions.
+#+end_quote
+
+* Contents                                                         :noexport:
+:PROPERTIES:
+:TOC:       :include all :depth 2
+:END:
+
+:CONTENTS:
+- [[#overview][Overview]]
+- [[#common-steps][Common Steps]]
+  - [[#install-distzilla-and-plugins][Install Dist::Zilla and Plugins]]
+  - [[#environment-configuration][Environment Configuration]]
+  - [[#create-dzil-global-configuration][Create Dzil Global Configuration]]
+  - [[#useful-commands-reference][Useful Commands Reference]]
+- [[#basic-workflow][Basic Workflow]]
+  - [[#create-a-new-distribution][Create a New Distribution]]
+  - [[#edit-your-distribution][Edit your Distribution]]
+  - [[#build-test][Build, Test]]
+  - [[#install-and-uninstall][Install and Uninstall]]
+  - [[#debug-your-code][Debug your code]]
+  - [[#documentation][Documentation]]
+  - [[#plugin-configuration][Plugin Configuration]]
+- [[#examples][Examples]]
+  - [[#example1-helloworld][Example1, 'Hello::World']]
+  - [[#example2-helloworld2][Example2, 'Hello::World2']]
+  - [[#example3-helloworld3][Example3, 'Hello::World3']]
+  - [[#example4-helloworld4][Example4, 'Hello::World4']]
+:END:
+
+* Overview
+
+Dist::Zilla is a powerful tool that simplifies the process of creating, testing, and
+distributing Perl modules and distributions.
+
+*Core Terminology*
+
+- A *Module* in Perl is a reusable unit of code stored in a .pm file. A module provides functions,
+  variables, and classes that can be used by other Perl code. Naming convention: CamelCase with
+  no underscores (Greeting, not greeting or greeting_module)
+- A *Package* in Perl is a namespace mechanism to avoid name collisions. Modules use packages to
+  organize code. The keyword package declares a namespace (use double colons '::' as namespace
+  separators).
+- A *Distribution* in Perl is a collection of related modules and scripts bundled together for
+  distribution via CPAN. A distribution can contain multiple modules.
+- A *Plugin* is A Dist::Zilla extension that performs specific tasks
+  - Names starting with @ are bundles (collections of plugins)
+  - Names starting with = use the full plugin name
+- A *Phase* is A stage in the build process where plugins can act
+
+*Case Sensitivity*
+
+- Maintain exact case matching between package names and file paths
+- Be aware that some filesystems are case-insensitive but Perl is case-sensitive
+- Test on case-sensitive systems to avoid portability issues
+
+*Other considerations*
+
+- Use lowercase names for pragmas
+- Prefix with underscore to indicate private/internal use
+- Place all modules under the lib/ directory in your distribution
+- Separate namespace like MyModule::Internal
+
+* Common Steps
+
+** Install Dist::Zilla and Plugins
+
+Install Dist::Zilla and its required plugins:
+
+#+begin_src shell-script
+# Install Dist::Zilla
+sudo cpanm Dist::Zilla
+
+# Install useful utilities
+sudo cpanm Dist::Zilla::PluginBundle::@Basic  # Core plugin bundle
+sudo cpanm Test::Output                       # For testing script output
+sudo cpanm Dist::Zilla::Plugin::OurPkgVersion # For version management
+sudo cpanm Archive::Tar::Wrapper              # For handling tar archives
+sudo cpanm Dist::Zilla::Plugin::Test::Perl::Critic
+sudo cpanm Dist::Zilla::Plugin::PodWeaver
+sudo cpanm Dist::Zilla::Plugin::AutoPrereqs
+sudo cpanm Dist::Zilla::Plugin::Git::NextVersion
+
+sudo cpanm App::pmuninstall                   # To uninstall modules
+#+end_src
+
+** Environment Configuration
+
+Add these to your shell profile (.bashrc, .zshrc, etc.) to ensure Perl can find your installed
+modules:
+
+#+begin_src shell-script
+export PERL5LIB="$HOME/perl5/lib/perl5"
+export PATH="$HOME/perl5/bin:$PATH"
+#+end_src
+
+** Create Dzil Global Configuration
+
+Create ~/.dzil/config.ini:
+
+#+begin_src conf-windows
+[%User]
+name  = Your Name
+email = your.email@example.com
+
+[%Rights]
+license_class    = Perl_5
+copyright_holder = Your Name
+
+[%PAUSE]
+username = YOUR_PAUSE_ID
+password = YOUR_PAUSE_PASSWORD
+#+end_src
+
+** Useful Commands Reference
+
+#+begin_src shell-script
+# Module management
+dzil new Module::Name      # Create new distribution
+dzil build                 # Build distribution
+dzil test                  # Run tests
+dzil test --verbose        # Run tests verbosely
+dzil test --author         # Run author tests too
+dzil test --release        # Run release tests
+dzil clean                 # Clean build artifacts
+
+# List all installed modules
+perl -MExtUtils::Installed -e 'print join "\n", ExtUtils::Installed->new->modules'
+# List required dependencies
+dzil listdeps --missing
+
+# Installation
+dzil install               # Install the distribution
+pm-uninstall Module::Name  # Uninstall a module
+
+# Release
+dzil release               # Release to CPAN
+dzil release --trial       # Trial release
+
+# Information
+dzil plugins               # List all plugins in current distribution
+dzil dumpconfig            # Show plugin configuration
+dzil ls                    # List files in distribution
+dzil listdeps              # List dependencies
+
+# Development
+perl -Ilib bin/script      # Run script with local lib
+prove -lv t/               # Run tests directly
+perlcritic lib/            # Run Perl::Critic
+
+# Debugging
+DZIL_TRACE=1 dzil build    # Trace plugin execution
+#+end_src
+
+* Basic Workflow
+
+** Create a New Distribution
+
+A typical Dist::Zilla-based distribution:
+
+#+begin_src text
+My-Distribution/
+├── Changes              # Version history
+├── dist.ini             # Dist::Zilla configuration
+├── .gitignore           # Git ignore file
+├── lib/                 # Perl modules
+|   └── My/
+|       └── Module.pm
+├── bin/                 # Executable scripts
+|   └── my-script
+├── t/                   # Test files
+|   ├── 00-load.t
+|   └── 01-basic.t
+├── xt/                  # Author tests
+|   └── pod-coverage.t
+└── share/               # Shared data files
+    └── data.txt
+#+end_src
+
+Create a new distribution skeleton:
+
+#+begin_src shell-script
+dzil new My::Module
+cd My-Module
+#+end_src
+
+This creates a directory structure like:
+
+#+begin_src text
+My-Module/lib/My/Module.pm
+#+end_src
+
+or (etc.)
+
+#+begin_src text
+My-Module/
+├── dist.ini
+├── lib/
+│   └── My/
+│       └── Module.pm
+└── t/
+#+end_src
+
+#+begin_src text
+Don't forget to add execute permission for your package's executable script.
+#+end_src
+
+** Edit your Distribution
+
+*** Configure
+
+Create/edit =dist.ini= file to define your module metadata:
+
+#+begin_src conf-windows
+name    = My-Module
+author  = Your Name <email@example.com>
+license = Perl_5
+copyright_holder = Your Name
+version = 0.001
+
+[@Basic]
+
+[PkgVersion]
+#+end_src
+
+*** Module
+
+Create/edit your module:
+
+#+begin_src cperl
+package My::Module;
+
+use strict;
+use warnings;
+
+# VERSION  <- Automatically replaced by [OurPkgVersion]
+
+sub new {
+    my $class = shift;
+    return bless {}, $class;
+}
+
+sub hello {
+    my $self = shift;
+    return "Hello, World!";
+}
+
+1;
+
+__END__
+
+=head1 NAME
+
+My::Module - A simple example module
+
+=head1 SYNOPSIS
+
+    use My::Module;
+
+    my $obj = My::Module->new;
+    print $obj->hello;  # prints "Hello, World!"
+
+=head1 DESCRIPTION
+
+This is an example module that demonstrates basic Dist::Zilla usage.
+
+=head1 METHODS
+
+=head2 new
+
+Creates a new instance of My::Module.
+
+=head2 hello
+
+Returns a greeting string.
+
+=cut
+#+end_src
+
+** Build, Test
+*** Test Your Module
+
+Run tests:
+
+#+begin_src shell-script
+dzil test
+# Run tests with verbose output
+dzil test --verbose
+#+end_src
+
+*** Build Your Module
+
+Create a distributable tarball:
+
+#+begin_src shell-script
+dzil build
+#+end_src
+
+*** Release
+
+#+begin_src bash
+# Do a trial release first
+dzil release --trial
+
+# When ready, do a real release
+dzil release
+#+end_src
+
+** Install and Uninstall
+
+*** Install the module:
+
+#+begin_src shell-script
+dzil install <NAME-tar.gz>
+# or (if available)
+dzil
+#+end_src
+
+*** Uninstall the module:
+
+#+begin_src shell-script
+pm-uninstall Module::Name
+#+end_src
+
+** Debug your code
+
+There are several ways to test and debug your code during development:
+
+*** Method-1: Include local library in command (recommended)
+
+#+begin_src shell-script
+perl -Ilib bin/example-hello
+#+end_src
+
+*** Method-2: Using the Perl Debugger, `perl -d` (optional)
+
+#+begin_src shell-script
+perl -Ilib -d bin/example-hello
+#+end_src
+
+*** Method-3: Set the environment variable (not recommended way)
+#+begin_src shell-script
+export PERL5LIB="$PERL5LIB:./lib"
+# or
+export PERL5LIB=./lib
+#+end_src
+
+Call:
+
+#+begin_src shell-script
+bin/example-hello
+#+end_src
+
+** Documentation
+
+#+begin_src shell-script
+perldoc Module::Name
+#+end_src
+
+** Plugin Configuration
+
+*** Essential Plugins
+
+**** @Basic Bundle
+
+The @Basic bundle includes these plugins:
+
+#+begin_src conf-windows
+[@Basic]
+# Equivalent to:
+[GatherDir]
+[PruneCruft]
+[ManifestSkip]
+[MetaYAML]
+[License]
+[Readme]
+[ExtraTests]
+[ExecDir]
+[ShareDir]
+[MakeMaker]
+[Manifest]
+[TestRelease]
+[ConfirmRelease]
+[UploadToCPAN]
+#+end_src
+
+**** Version Management
+
+Choose one of these approaches:
+
+1. *Static Version* (simplest):
+   #+begin_src conf-windows
+   version = 1.234
+   [OurPkgVersion]
+   #+end_src
+
+2. *Git-based Version*:
+   #+begin_src conf-windows
+   [Git::NextVersion]
+   first_version = 0.001
+   [OurPkgVersion]
+   #+end_src
+
+3. *Version from Main Module*:
+   #+begin_src conf-windows
+   [VersionFromMainModule]
+   #+end_src
+
+**** Prerequisite Management
+
+#+begin_src conf-windows
+# Manual prerequisites
+[Prereqs]
+strict = 0
+warnings = 0
+Moose = 2.00
+
+[Prereqs / TestRequires]
+Test::More = 0.98
+Test::Exception = 0
+
+# Automatic prerequisite detection
+[AutoPrereqs]
+skip = ^(?:base|strict|warnings|if|utf8|charnames|open|parent|re|subs|version|Carp|Exporter|constant|integer|lib|vars)$
+
+# Or use a cpanfile
+[Prereqs::FromCPANfile]
+#+end_src
+
+**** Documentation
+
+#+begin_src conf-windows
+# Automatic POD manipulation
+[PodWeaver]
+
+# Or just version insertion
+[PodVersion]
+
+# POD coverage tests
+[PodCoverageTests]
+[PodSyntaxTests]
+#+end_src
+
+**** Git Integration
+
+#+begin_src conf-windows
+[@Git]
+# Equivalent to:
+[Git::Check]
+[Git::Commit]
+[Git::Tag]
+[Git::Push]
+
+# Custom git configuration
+[Git::Check]
+allow_dirty = dist.ini
+allow_dirty = Changes
+
+[Git::Commit]
+commit_msg = Release v%v%n%n%c
+
+[Git::Tag]
+tag_format = v%v
+tag_message = Release v%v
+#+end_src
+
+*** Advanced Plugin Configuration
+
+**** Custom Plugin Bundle
+
+Create your own plugin bundle:
+
+#+begin_src conf-windows
+[@Filter]
+-bundle = @Basic
+-remove = Readme
+-remove = UploadToCPAN
+
+[ReadmeAnyFromPod]
+type = markdown
+filename = README.md
+location = root
+
+[Run::AfterBuild]
+run = cp %d/README.md .
+
+[Test::Perl::Critic]
+critic_config = perlcriticrc
+#+end_src
+
+**** Executable Scripts
+
+#+begin_src conf-windows
+[ExecDir]
+dir = bin  # default is 'bin'
+
+# Or use script directory
+[ScriptDir]
+dir = script
+#+end_src
+
+**** Multiple Modules
+
+#+begin_src conf-windows
+# Specify main module explicitly
+main_module = lib/My/Module.pm
+
+# Find all modules
+[FileFinder::ByName / MyModules]
+dir = lib
+match = \.pm$
+
+[OurPkgVersion]
+finder = MyModules
+#+end_src
+
+* Examples
+
+** Example1, 'Hello::World'
+
+Basic executable script that prints "Hello World!" using a simple module structure.
+
+*** Create a new distribution
+
+Create a new distribution skeleton:
+
+#+begin_src shell-script
+dzil new Example::Hello
+#+end_src
+
+*Directory Structure(after edit/add files)*
+
+#+begin_src text
+Example-Hello/
+├── README.md
+├── dist.ini
+├── bin/
+│   └── example-hello      # The executable script
+├── lib/
+│   └── Example/
+│       └── Hello.pm       # Hello message
+└── t/
+    └── hello.t            # Test script
+#+end_src
+
+*** Add README
+
+Edit [[Example-Hello/README.md]] file:
+
+#+begin_src markdown :tangle Example-Hello/README.md :mkdirp yes
+# Example::Hello
+
+A simple Perl module that prints "Hello World!" via an executable script.
+
+## Installation
+1. Install Dist::Zilla and dependencies (see guide).
+2. Run `dzil build` to create the module.
+3. Run `dzil install` to install it.
+
+## Usage
+Run the script:
+```bash
+example-hello
+```
+Output: `Hello World!`
+
+## Testing
+Run `dzil test` to verify functionality.
+#+end_src
+
+*** Edit/Add configuration file
+
+Edit [[Example-Hello/dist.ini]] file:
+
+#+begin_src conf-windows :tangle Example-Hello/dist.ini :mkdirp yes
+name    = Example-Hello
+author  = Your Name <email@example.com>
+license = Perl_5
+copyright_holder = Your Name
+version = 0.001
+
+[@Basic]
+[AutoPrereqs]
+
+[ExecDir]
+
+[PkgVersion]
+#+end_src
+
+*** Add executable script
+
+Create the executable script:
+
+#+begin_src shell-script
+mkdir bin
+touch bin/example-hello
+sudo chmod +x bin/example-hello
+#+end_src
+
+Edit [[Example-Hello/bin/example-hello]] file:
+
+#+begin_src cperl :tangle Example-Hello/bin/example-hello :mkdirp yes
+#!/usr/bin/env perl
+
+use warnings;
+use strict;
+
+use Example::Hello;
+
+# Call the module's "hello" method and print
+print Example::Hello::hello() . "\n";
+#+end_src
+
+*** Add module
+
+Edit [[Example-Hello/lib/Example/Hello.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello/lib/Example/Hello.pm :mkdirp yes
+package Example::Hello;
+use strict;
+use warnings;
+
+# Subroutine to return the message
+sub hello {
+    return "Hello World!";
+}
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::Hello - Prints a "Hello World!" message
+
+=head1 SYNOPSIS
+
+    use Example::Hello;
+    print Example::Hello::hello();
+
+=head1 DESCRIPTION
+
+A simple module that returns a greeting.
+#+end_src
+
+*** Add test
+
+Edit [[Example-Hello/t/hello.t]] file:
+
+#+begin_src cperl :tangle Example-Hello/t/hello.t :mkdirp yes
+use Test::More;
+use Test::Output;
+
+# Test the script's output
+stdout_is { system("bin/example-hello") } "Hello World!\n", "Script prints 'Hello World!'";
+
+done_testing;
+#+end_src
+
+*** Usage
+
+Build, test, and install:
+
+#+begin_src shell-script
+dzil build
+dzil test
+dzil install
+#+end_src
+
+Run the script:
+
+#+begin_src shell-script
+example-hello
+#+end_src
+
+** Example2, 'Hello::World2'
+
+Multi-module with command-line arguments supporting different message types.
+
+*** Create a new distribution
+
+Create a new distribution skeleton:
+
+#+begin_src shell-script
+dzil new Example::Hello2
+#+end_src
+
+*Directory Structure(after edit/add files)*
+
+#+begin_src text
+Example-Hello2/
+├── README.md
+├── dist.ini
+├── bin/
+│   └── example-hello2     # The executable script
+├── lib/
+│   └── Example/
+│       ├── Hello.pm       # Hello message
+│       ├── Bye.pm         # Goodbye message
+│       └── HowAreYou.pm   # Default message
+└── t/
+    ├── 00-basic.t         # Test classes
+    └── hello2.t           # Test script
+#+end_src
+
+*** Add README
+
+Edit [[Example-Hello2/README.md]] file:
+
+#+begin_src markdown :tangle Example-Hello2/README.md :mkdirp yes
+# Example::Hello2
+
+A Perl module with an executable script that prints different messages based on command-line
+arguments.
+
+## Installation
+1. Install Dist::Zilla and dependencies.
+2. Run `dzil build`.
+3. Run `dzil install`.
+
+## Usage
+Run the script with an argument:
+```bash
+example-hello2 hello  # Outputs: Hello World!!
+example-hello2 bye    # Outputs: Goodbye!
+example-hello2        # Outputs: How are you!
+```
+
+## Testing
+Run `dzil test` to execute tests.
+#+end_src
+
+*** Add configuration file
+
+Edit [[Example-Hello2/dist.ini]] file:
+
+#+begin_src conf-windows :tangle Example-Hello2/dist.ini :mkdirp yes
+name    = Example-Hello2
+author  = Your Name <email@example.com>
+license = Perl_5
+copyright_holder = Your Name
+copyright_year   = 2025
+
+version = 0.001
+
+[@Basic]
+[AutoPrereqs]
+[ExecDir]
+
+[PkgVersion]
+#+end_src
+
+*** Add executable script
+
+Edit [[Example-Hello2/bin/example-hello2]] file:
+
+#+begin_src cperl :tangle Example-Hello2/bin/example-hello2 :mkdirp yes
+#!/usr/bin/env perl
+
+use warnings;
+use strict;
+use Getopt::Long;
+
+use Example::Hello;
+use Example::Bye;
+use Example::HowAreYou;
+
+# Available actions
+my %actions = (
+    hello => 'Example::Hello',
+    bye   => 'Example::Bye',
+    how   => 'Example::HowAreYou',
+);
+
+# Handle help option
+my $help;
+GetOptions('h|help' => \$help);
+
+# * Way-1: There is Default input arguemt
+
+if ($help) {
+    print "Usage: $0 [hello|bye|how]\n";
+    print "  hello - Say hello\n";
+    print "  bye   - Say goodbye\n";
+    print "  how   - Ask how are you\n";
+    exit 0;
+}
+
+# Get the first argument
+my $action = shift // '';
+
+# Determine the class
+my $class = $actions{$action} // 'Example::HowAreYou';
+
+# Create object and print message
+my $obj = $class->new;
+print $obj->message . "!\n";
+
+# * Way-2: There is not Default input arguemt
+
+# # Show help if no input is provided or if -h/--help is passed
+# if ($help || !@ARGV) {
+#     print "Usage: $0 [hello|bye|how]\n";
+#     print "  hello - Say hello\n";
+#     print "  bye   - Say goodbye\n";
+#     print "  how   - Ask how are you\n";
+#     exit 0;
+# }
+
+# # Get the first argument
+# my $action = shift;
+
+# Check if the action is valid, otherwise show help and exit
+# unless (exists $actions{$action}) {
+#     print "Error: Invalid argument '$action'\n";
+#     print "Use '$0 --help' to see available options.\n";
+#     exit 1;
+# }
+
+# * Way-3: A Pure style
+
+# my $action = shift // '';  # Get the first argument
+
+# my $class =
+#     $action eq 'hello' ? 'Example::Hello' :
+#     $action eq 'bye'   ? 'Example::Bye'   :
+#     'Example::HowAreYou';
+
+# my $obj = $class->new;
+# print $obj->message . "!\n";  # Append exclamation
+#+end_src
+
+#+begin_src shell-script
+# Add execute permission:
+sudo chmod +x bin/example-hello2
+#+end_src
+
+*** Add module
+
+Edit [[Example-Hello2/lib/Example/Bye.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello2/lib/Example/Bye.pm :mkdirp yes
+package Example::Bye;
+
+use strict;
+use warnings;
+
+sub new { bless {}, shift }
+
+sub message { "Goodbye" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::Bye - Returns a "Goodbye" message
+#+end_src
+
+Edit [[Example-Hello2/lib/Example/Hello.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello2/lib/Example/Hello.pm :mkdirp yes
+package Example::Hello;
+
+use strict;
+use warnings;
+
+sub new { bless {}, shift }
+
+sub message { "Hello World!" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::Hello - Returns a "Hello World!" message
+
+=head1 SYNOPSIS
+
+  my $hello = Example::Hello->new;
+  print $hello->message;
+#+end_src
+
+Edit [[Example-Hello2/lib/Example/HowAreYou.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello2/lib/Example/HowAreYou.pm :mkdirp yes
+package Example::HowAreYou;
+
+use strict;
+use warnings;
+
+sub new { bless {}, shift }
+
+sub message { "How are you" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::HowAreYou - Returns default message
+#+end_src
+
+*** Add tests
+
+Edit [[Example-Hello2/t/00-basic.t]] file:
+
+#+begin_src cperl :tangle Example-Hello2/t/00-basic.t :mkdirp yes
+use Test::More;
+use Example::Hello;
+use Example::Bye;
+use Example::HowAreYou;
+
+my $hello = Example::Hello->new;
+is($hello->message, 'Hello World!', 'Hello message works');
+
+my $bye = Example::Bye->new;
+is($bye->message, 'Goodbye', 'Bye message works');
+
+my $default = Example::HowAreYou->new;
+is($default->message, 'How are you', 'Default message works');
+
+done_testing;
+#+end_src
+
+Edit [[Example-Hello2/t/hello2.t]] file:
+
+#+begin_src cperl :tangle Example-Hello2/t/hello2.t :mkdirp yes
+use Test::More;
+use Test::Output;
+
+stdout_is { system("bin/example-hello2 hello") } "Hello World!!\n", 'hello arg';
+stdout_is { system("bin/example-hello2 bye") } "Goodbye!\n", 'bye arg';
+stdout_is { system("bin/example-hello2") } "How are you!\n", 'no arg';
+
+done_testing;
+#+end_src
+
+** Example3, 'Hello::World3'
+
+Multi-module with command-line arguments supporting different message types.
+Support Git integration and custom Makefile for easier management.
+
+*** Create a new distribution
+
+Create a new distribution skeleton:
+
+#+begin_src shell-script
+dzil new Example::Hello3
+#+end_src
+
+*Directory Structure(after edit/add files)*
+
+#+begin_src text
+Example-Hello3/
+├── README.md
+├── Makefile
+├── dist.ini
+├── bin/
+│   └── example-hello3     # The executable script
+├── lib/
+|   ├───Example.pm
+│   └── Example/
+│       ├── Hello.pm       # Hello message
+│       ├── Bye.pm         # Goodbye message
+│       └── HowAreYou.pm   # Default message
+└── t/
+    ├── 00-basic.t         # Test classes
+    └── hello3.t           # Test script
+#+end_src
+
+*** Add README
+
+Edit [[Example-Hello3/README.md]] file:
+
+#+begin_src markdown :tangle Example-Hello3/README.md :mkdirp yes
+# Example::Hello3
+
+A Perl module with versioning and a script that prints messages based on arguments.
+
+## Installation
+1. Install Dist::Zilla and dependencies.
+2. Run `make build`.
+3. Run `make install`.
+
+## Usage
+Run the script:
+```bash
+example-hello3 hello      # Outputs: Hello World!!
+example-hello3 bye        # Outputs: Goodbye!
+example-hello3            # Outputs: How are you!
+example-hello3 --version  # Shows version
+```
+
+## Testing
+Run `make test`.
+
+## Makefile Targets
+- `make build`: Build the module.
+- `make test`: Run tests.
+- `make install`: Install the module.
+- `make uninstall`: Uninstall the module.
+#+end_src
+
+*** Add configuration file
+
+Edit [[Example-Hello3/dist.ini]] file:
+
+#+begin_src conf-windows :tangle Example-Hello3/dist.ini :mkdirp yes
+name    = Example-Hello3
+author  = Your Name <email@example.com>
+license = Perl_5
+copyright_holder = Your Name
+copyright_year   = 2025
+
+; version = 0.002
+
+[@Basic]
+[AutoPrereqs]
+
+[ExecDir]            ; Includes scripts from bin/
+
+[OurPkgVersion]      ; Automatically sets $VERSION in modules
+
+[Git::NextVersion]   ; Optional: Auto-bump versions from git tags
+
+first_version = 1.2.003
+
+; major = 2
+; minor = 001
+#+end_src
+
+*** Add executable script
+
+Edit [[Example-Hello3/bin/example-hello3]] file:
+
+#+begin_src cperl :tangle Example-Hello3/bin/example-hello3 :mkdirp yes
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use Example;            # Main module to access the version
+use Example::Hello;
+use Example::Bye;
+use Example::HowAreYou;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+package Example::App;
+
+use Getopt::Long qw(GetOptions);
+
+sub new { bless {}, shift }
+
+sub run {
+    my ($self) = @_;
+
+    my %actions = (
+        hello => 'Example::Hello',
+        bye   => 'Example::Bye',
+        how   => 'Example::HowAreYou',
+       );
+
+    my ($help, $version);
+    GetOptions(
+        'h|help'    => \$help,
+        'v|version' => \$version,
+       );
+
+    if ($version) {
+        print "'Example' version: " . Example->version() . "\n";
+        exit 0;
+    }
+
+    if ($help) {
+        $self->show_help();
+        exit 0;
+    }
+
+    # Get action from command-line argument
+    my $action = shift @ARGV || 'how';
+    my $class  = $actions{$action} // 'Example::HowAreYou';
+
+    # Run the selected action
+    my $obj = $class->new;
+    print $obj->message . "!\n";
+}
+
+sub show_help {
+    print <<"HELP";
+Usage: $0 [options] [hello|bye|how]
+
+Options:
+  -h, --help      Show this help message
+  -v, --version   Display the script version
+
+Commands:
+  hello           Say hello
+  bye             Say goodbye
+  how             Ask how are you (default)
+HELP
+}
+
+# Run the script
+my $app = Example::App->new();
+$app->run();
+#+end_src
+
+#+begin_src shell-script
+# Add execute permission:
+sudo chmod +x bin/example-hello3
+#+end_src
+
+*** Add module
+
+Edit [[Example-Hello3/lib/Example.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello3/lib/Example.pm :mkdirp yes
+package Example;
+
+use strict;
+use warnings;
+
+# VERSION  <- Automatically replaced by [OurPkgVersion]
+
+# sub version {
+#     return $VERSION;
+# }
+
+sub version {
+    my $git_info = `git rev-parse --short HEAD 2>/dev/null` || 'unknown';
+    chomp $git_info;
+    return "$VERSION (commit $git_info)";
+}
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::version - Returns script version
+#+end_src
+
+Edit [[Example-Hello3/lib/Example/Bye.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello3/lib/Example/Bye.pm :mkdirp yes
+package Example::Bye;
+
+use strict;
+use warnings;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+sub new { bless {}, shift }
+
+sub message { "Goodbye" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::Bye - Returns a "Goodbye" message
+#+end_src
+
+Edit [[Example-Hello3/lib/Example/Hello.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello3/lib/Example/Hello.pm :mkdirp yes
+package Example::Hello;
+
+use strict;
+use warnings;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+sub new { bless {}, shift }
+
+sub message { "Hello World!" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::Hello - Returns a "Hello World!" message
+
+=head1 SYNOPSIS
+
+  my $hello = Example::Hello->new;
+  print $hello->message;
+#+end_src
+
+Edit [[Example-Hello3/lib/Example/HowAreYou.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello3/lib/Example/HowAreYou.pm :mkdirp yes
+package Example::HowAreYou;
+
+use strict;
+use warnings;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+sub new { bless {}, shift }
+
+sub message { "How are you" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::HowAreYou - Returns default message
+#+end_src
+
+*** Add tests
+
+Edit [[Example-Hello3/t/00-basic.t]] file:
+
+#+begin_src cperl :tangle Example-Hello3/t/00-basic.t :mkdirp yes
+use Test::More;
+use Example::Hello;
+use Example::Bye;
+use Example::HowAreYou;
+
+my $hello = Example::Hello->new;
+is($hello->message, 'Hello World!', 'Hello message works');
+
+my $bye = Example::Bye->new;
+is($bye->message, 'Goodbye', 'Bye message works');
+
+my $default = Example::HowAreYou->new;
+is($default->message, 'How are you', 'Default message works');
+
+done_testing;
+#+end_src
+
+[[Example-Hello3/t/hello3.t]]
+
+#+begin_src cperl :tangle Example-Hello3/t/hello3.t :mkdirp yes
+use Test::More;
+use Test::Output;
+
+stdout_is { system("bin/example-hello3 hello") } "Hello World!!\n", 'hello arg';
+stdout_is { system("bin/example-hello3 bye") } "Goodbye!\n", 'bye arg';
+stdout_is { system("bin/example-hello3") } "How are you!\n", 'no arg';
+
+done_testing;
+#+end_src
+
+*** Add Make-file
+
+Edit [[Example-Hello3/Makefile]] file:
+
+#+begin_src makefile :tangle Example-Hello3/Makefile :mkdirp yes
+# Makefile for managing a Perl distribution with Dist::Zilla
+
+DIST_NAME := $(shell perl -ne 'print $$1 if /^name\s*=\s*(\S+)/' dist.ini)
+DIST_TAR := $(DIST_NAME)-$(VERSION).tar.gz
+BUILD_DIR := $(DIST_NAME)-$(VERSION)
+SCRIPT_NAME := $(shell ls bin/* | head -n 1 | xargs basename)
+SRC_FILES := $(wildcard lib/$(DIST_NAME)/*.pm bin/* dist.ini)
+
+.PHONY: all clean build test run install uninstall uninstall-force help
+
+# Default target
+help:
+	@echo "Usage: make <target>"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  help            - Display this help message"
+	@echo "  clean           - Remove all derived files"
+	@echo "  build           - Build the module"
+	@echo "  test            - Run tests"
+	@echo "  run [args]      - Run the script from the built directory with optional args"
+	@echo "  install         - Install the module"
+	@echo "  uninstall       - Uninstall the module with pm-uninstall"
+	@echo "  uninstall-force - Uninstall the module without dependency checks"
+
+all: build
+
+# Remove all derived files
+clean:
+	dzil clean
+	rm -rf $(BUILD_DIR) *.tar.gz
+
+# Build the module only if sources have changed
+$(DIST_TAR): $(SRC_FILES)
+	@echo "Building module..."
+	dzil build
+
+build: $(DIST_TAR)
+
+# Extract the tarball for run and test targets
+$(BUILD_DIR): $(DIST_TAR)
+	@echo "Extracting module..."
+	tar -xzf $(DIST_TAR)
+
+# ANSI color codes
+GREEN := $(shell tput setaf 2)
+RED := $(shell tput setaf 1)
+BOLD := $(shell tput bold)
+NC := $(shell tput sgr0)
+
+# Run tests only if needed
+test: $(BUILD_DIR)
+	@echo "$(BOLD)Running tests...$(NC)"
+	@dzil test && echo "$(GREEN)✓ Tests passed!$(NC)" || echo "$(RED)✗ Tests failed!$(NC)"
+
+# Run the script with optional arguments passed from the command line
+run: $(BUILD_DIR)
+	perl -I$(BUILD_DIR)/lib $(BUILD_DIR)/bin/$(SCRIPT_NAME) $(filter-out $@,$(MAKECMDGOALS))
+
+# Catch-all target to prevent errors from extra arguments
+%:
+	@:
+
+# Install the module (only rebuild if necessary)
+install: $(DIST_TAR)
+	dzil install
+
+# Check if pm-uninstall is installed (subroutine-like)
+CHECK_PM_UNINSTALL = @which pm-uninstall >/dev/null 2>&1 || \
+	(echo "Error: pm-uninstall not found. Install App::pmuninstall (e.g., 'cpan App::pmuninstall')" && exit 1)
+
+# Uninstall the module using pm-uninstall
+uninstall:
+	$(CHECK_PM_UNINSTALL)
+	pm-uninstall $(DIST_NAME)
+
+# Uninstall the module forcibly without dependency checks
+uninstall-force:
+	$(CHECK_PM_UNINSTALL)
+	pm-uninstall --no-checkdeps $(DIST_NAME)
+#+end_src
+
+Usage:
+
+#+begin_src shell-script
+make build
+make test
+make install
+#+end_src
+
+** Example4, 'Hello::World4'
+
+Multi-module with command-line arguments supporting different message types, support Git integration.
+Comprehensive distribution with ExtUtils::MakeMaker compatibility and extensive plugin
+configuration.
+
+*** Create a new distribution
+
+#+begin_src shell-script
+dzil new Example::Hello4
+#+end_src
+
+*Directory Structure(after edit/add files)*
+
+#+begin_src text
+Example-Hello4/
+├── README.md
+├── Makefile.PL
+├── dist.ini
+├── bin/
+│   └── example-hello4     # The executable script
+├── lib/
+|   ├───Example.pm
+│   └── Example/
+│       ├── Hello.pm       # Hello message
+│       ├── Bye.pm         # Goodbye message
+│       └── HowAreYou.pm   # Default message
+└── t/
+    ├── 00-basic.t         # Test classes
+    └── hello4.t           # Test script
+#+end_src
+
+*** Add README
+
+Edit [[Example-Hello4/README.md]] file:
+
+#+begin_src markdown :tangle Example-Hello4/README.md :mkdirp yes
+# Example::Hello4
+
+A Perl module with versioning and a script that prints messages based on arguments.
+
+## Installation
+1. Install Dist::Zilla and dependencies.
+2. Run `dzil build`.
+3. Run `dzil install`.
+
+## Usage
+Run the script:
+```bash
+example-hello4 hello      # Outputs: Hello World!!
+example-hello4 bye        # Outputs: Goodbye!
+example-hello4            # Outputs: How are you!
+example-hello4 --version  # Shows version
+```
+
+## Testing
+Run `dzil test --verbose`.
+#+end_src
+
+*** Add configuration file
+
+Edit [[Example-Hello4/dist.ini]] file:
+
+#+begin_src conf-windows :tangle Example-Hello4/dist.ini :mkdirp yes
+name    = Example-Hello4
+author  = Your Name <email@example.com>
+license = Perl_5
+copyright_holder = Your Name
+copyright_year   = 2025
+
+version = 0.001
+
+; Then use OurPkgVersion to insert it into the module files
+[OurPkgVersion]
+
+[GatherDir]
+exclude_filename = Makefile.PL
+
+[AutoPrereqs]
+[PruneCruft]
+[ManifestSkip]
+[MetaYAML]
+[MetaJSON]
+[License]
+[Readme]
+[ExtraTests]
+[ExecDir]
+[ShareDir]
+[MakeMaker]
+[Manifest]
+[TestRelease]
+[ConfirmRelease]
+[UploadToCPAN]
+
+; Testing plugins
+[Test::Compile]
+#+end_src
+
+*** Add executable script
+
+Edit [[Example-Hello4/bin/example-hello4]] file:
+
+#+begin_src cperl :tangle Example-Hello4/bin/example-hello4 :mkdirp yes
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use Example;            # Main module to access the version
+use Example::Hello;
+use Example::Bye;
+use Example::HowAreYou;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+package Example::App;
+
+use Getopt::Long qw(GetOptions);
+
+sub new { bless {}, shift }
+
+sub run {
+    my ($self) = @_;
+
+    my %actions = (
+        hello => 'Example::Hello',
+        bye   => 'Example::Bye',
+        how   => 'Example::HowAreYou',
+       );
+
+    my ($help, $version);
+    GetOptions(
+        'h|help'    => \$help,
+        'v|version' => \$version,
+       );
+
+    if ($version) {
+        print "'Example' version: " . Example->version() . "\n";
+        exit 0;
+    }
+
+    if ($help) {
+        $self->show_help();
+        exit 0;
+    }
+
+    # Get action from command-line argument
+    my $action = shift @ARGV || 'how';
+    my $class  = $actions{$action} // 'Example::HowAreYou';
+
+    # Run the selected action
+    my $obj = $class->new;
+    print $obj->message . "!\n";
+}
+
+sub show_help {
+    print <<"HELP";
+Usage: $0 [options] [hello|bye|how]
+
+Options:
+  -h, --help      Show this help message
+  -v, --version   Display the script version
+
+Commands:
+  hello           Say hello
+  bye             Say goodbye
+  how             Ask how are you (default)
+HELP
+}
+
+# Run the script
+my $app = Example::App->new();
+$app->run();
+#+end_src
+
+#+begin_src shell-script
+# Add execute permission:
+sudo chmod +x bin/example-hello4
+#+end_src
+
+*** Add module
+
+Edit [[Example-Hello4/lib/Example.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello4/lib/Example.pm :mkdirp yes
+package Example;
+
+use strict;
+use warnings;
+
+# VERSION  <- Automatically replaced by [OurPkgVersion]
+
+# sub version {
+#     return $VERSION;
+# }
+
+sub version {
+    my $git_info = `git rev-parse --short HEAD 2>/dev/null` || 'unknown';
+    chomp $git_info;
+    return "$VERSION (commit $git_info)";
+}
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::version - Returns script version
+#+end_src
+
+Edit [[Example-Hello4/lib/Example/Bye.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello4/lib/Example/Bye.pm :mkdirp yes
+package Example::Bye;
+
+use strict;
+use warnings;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+sub new { bless {}, shift }
+
+sub message { "Goodbye" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::Bye - Returns a "Goodbye" message
+#+end_src
+
+Edit [[Example-Hello4/lib/Example/Hello.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello4/lib/Example/Hello.pm :mkdirp yes
+package Example::Hello;
+
+use strict;
+use warnings;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+sub new { bless {}, shift }
+
+sub message { "Hello World!" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::Hello - Returns a "Hello World!" message
+
+=head1 SYNOPSIS
+
+  my $hello = Example::Hello->new;
+  print $hello->message;
+#+end_src
+
+Edit [[Example-Hello4/lib/Example/HowAreYou.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello4/lib/Example/HowAreYou.pm :mkdirp yes
+package Example::HowAreYou;
+
+use strict;
+use warnings;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+sub new { bless {}, shift }
+
+sub message { "How are you" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::HowAreYou - Returns default message
+#+end_src
+
+*** Add tests
+
+Edit [[Example-Hello4/t/00-basic.t]] file:
+
+#+begin_src cperl :tangle Example-Hello4/t/00-basic.t :mkdirp yes
+use Test::More;
+use Example::Hello;
+use Example::Bye;
+use Example::HowAreYou;
+
+my $hello = Example::Hello->new;
+is($hello->message, 'Hello World!', 'Hello message works');
+
+my $bye = Example::Bye->new;
+is($bye->message, 'Goodbye', 'Bye message works');
+
+my $default = Example::HowAreYou->new;
+is($default->message, 'How are you', 'Default message works');
+
+done_testing;
+#+end_src
+
+[[Example-Hello4/t/hello4.t]]
+
+#+begin_src cperl :tangle Example-Hello4/t/hello4.t :mkdirp yes
+use Test::More;
+use Test::Output;
+
+stdout_is { system("bin/example-hello4 hello") } "Hello World!!\n", 'hello arg';
+stdout_is { system("bin/example-hello4 bye") } "Goodbye!\n", 'bye arg';
+stdout_is { system("bin/example-hello4") } "How are you!\n", 'no arg';
+
+done_testing;
+#+end_src
+
+*** Add Makefile.PL
+
+Edit [[Example-Hello4/Makefile.PL]] file:
+
+#+begin_src cperl :tangle Example-Hello4/Makefile.PL :mkdirp yes
+use ExtUtils::MakeMaker qw(WriteMakefile);
+
+WriteMakefile(
+    NAME             => 'Example::Hello4',
+    AUTHOR           => 'Your Name <your.email@example.com>',
+    VERSION_FROM     => 'lib/Example.pm',
+    ABSTRACT_FROM    => 'lib/Example.pm',
+    LICENSE          => 'perl',
+    MIN_PERL_VERSION => '5.010',
+    PREREQ_PM        => {
+        'strict'          => 0,
+        'warnings'        => 0,
+        'Path::Tiny'      => 0,
+        # Add other dependencies
+    },
+    TEST_REQUIRES    => {
+        'Test::More'        => 0,
+        'Test::Differences' => 0,
+        'Path::Tiny'        => 0,
+    },
+    test             => {TESTS => 't/*.t'},
+    EXE_FILES        => ['bin/example-hello4'],
+   );
+#+end_src
