@@ -7,17 +7,29 @@ distributing Perl modules and distributions.
 
 * Contents                                                         :noexport:
 :PROPERTIES:
-:TOC:       :include all :depth 1
+:TOC:       :include all :depth 2
 :END:
 
 :CONTENTS:
 - [[#overview][Overview]]
 - [[#common-steps][Common Steps]]
+  - [[#install-distzilla][Install Dist::Zilla]]
+  - [[#environment-setup][Environment Setup]]
+  - [[#useful-commands][Useful Commands]]
 - [[#basic-workflow][Basic Workflow]]
-- [[#example1-helloworld][Example1, 'Hello::World']]
-- [[#example2-helloworld2][Example2, 'Hello::World2']]
-- [[#example3-helloworld3][Example3, 'Hello::World3']]
-- [[#example4-helloworld4][Example4, 'Hello::World4']]
+  - [[#create-a-new-distribution][Create a New Distribution]]
+  - [[#configure-the-distribution][Configure the Distribution]]
+  - [[#modify-your-module][Modify Your Module]]
+  - [[#test-your-module][Test Your Module]]
+  - [[#build-your-module][Build Your Module]]
+  - [[#install-and-uninstall][Install and Uninstall]]
+  - [[#debug-your-code][Debug your code]]
+  - [[#read-documentation][Read documentation]]
+- [[#examples][Examples]]
+  - [[#example1-helloworld][Example1, 'Hello::World']]
+  - [[#example2-helloworld2][Example2, 'Hello::World2']]
+  - [[#example3-helloworld3][Example3, 'Hello::World3']]
+  - [[#example4-helloworld4][Example4, 'Hello::World4']]
 :END:
 
 * Overview
@@ -25,6 +37,16 @@ distributing Perl modules and distributions.
 Dist::Zilla is a powerful tool that simplifies the process of creating, testing, and
 distributing Perl modules and distributions. This guide walks you through setting up Perl
 modules, adding executable scripts, and testing your work with practical examples.
+
+*Core Terminology*
+
+- A *Module* in Perl is a reusable unit of code stored in a .pm file. A module provides functions,
+  variables, and classes that can be used by other Perl code. Naming convention: CamelCase with
+  no underscores (Greeting, not greeting or greeting_module)
+- A *Package* in Perl is a namespace mechanism to avoid name collisions. Modules use packages to
+  organize code. The keyword package declares a namespace.
+- A *Distribution* in Perl is a collection of related modules and scripts bundled together for
+  distribution via CPAN. A distribution can contain multiple modules.
 
 * Common Steps
 
@@ -137,7 +159,7 @@ My::Module - A simple Perl module
 This module provides a basic example of a Perl module.
 #+end_src
 
-** Test the Module
+** Test Your Module
 
 Run tests:
 
@@ -145,7 +167,7 @@ Run tests:
 dzil test
 #+end_src
 
-** Build the Module
+** Build Your Module
 
 Create a distributable tarball:
 
@@ -204,11 +226,13 @@ perl -Ilib -d bin/example-hello
 perldoc Module::Name
 #+end_src
 
-* Example1, 'Hello::World'
+* Examples
+
+** Example1, 'Hello::World'
 
 Basic executable script that prints "Hello World!" using a simple module structure.
 
-** Create a new distribution
+*** Create a new distribution
 
 Create a new distribution skeleton:
 
@@ -231,7 +255,7 @@ Example-Hello/
     └── hello.t            # Test script
 #+end_src
 
-** Add README
+*** Add README
 
 Edit [[Example-Hello/README.md]] file:
 
@@ -256,7 +280,7 @@ Output: `Hello World!`
 Run `dzil test` to verify functionality.
 #+end_src
 
-** Edit/Add configuration file
+*** Edit/Add configuration file
 
 Edit [[Example-Hello/dist.ini]] file:
 
@@ -274,7 +298,7 @@ version = 0.001
 [PkgVersion]
 #+end_src
 
-** Add executable script
+*** Add executable script
 
 Create the executable script:
 
@@ -298,7 +322,7 @@ use Example::Hello;
 print Example::Hello::hello() . "\n";
 #+end_src
 
-** Add module
+*** Add module
 
 Edit [[Example-Hello/lib/Example/Hello.pm]] file:
 
@@ -330,7 +354,7 @@ Example::Hello - Prints a "Hello World!" message
 A simple module that returns a greeting.
 #+end_src
 
-** Add test
+*** Add test
 
 Edit [[Example-Hello/t/hello.t]] file:
 
@@ -344,7 +368,7 @@ stdout_is { system("bin/example-hello") } "Hello World!\n", "Script prints 'Hell
 done_testing;
 #+end_src
 
-** Usage
+*** Usage
 
 Build, test, and install:
 
@@ -360,11 +384,11 @@ Run the script:
 example-hello
 #+end_src
 
-* Example2, 'Hello::World2'
+** Example2, 'Hello::World2'
 
 Multi-module with command-line arguments supporting different message types.
 
-** Create a new distribution
+*** Create a new distribution
 
 Create a new distribution skeleton:
 
@@ -390,7 +414,7 @@ Example-Hello2/
     └── hello2.t           # Test script
 #+end_src
 
-** Add README
+*** Add README
 
 Edit [[Example-Hello2/README.md]] file:
 
@@ -417,7 +441,7 @@ example-hello2        # Outputs: How are you!
 Run `dzil test` to execute tests.
 #+end_src
 
-** Add configuration file
+*** Add configuration file
 
 Edit [[Example-Hello2/dist.ini]] file:
 
@@ -437,7 +461,7 @@ version = 0.001
 [PkgVersion]
 #+end_src
 
-** Add executable script
+*** Add executable script
 
 Edit [[Example-Hello2/bin/example-hello2]] file:
 
@@ -517,7 +541,7 @@ print $obj->message . "!\n";
 # print $obj->message . "!\n";  # Append exclamation
 #+end_src
 
-** Add module
+*** Add module
 
 Edit [[Example-Hello2/lib/Example/Bye.pm]] file:
 
@@ -587,7 +611,7 @@ __END__
 Example::HowAreYou - Returns default message
 #+end_src
 
-** Add tests
+*** Add tests
 
 Edit [[Example-Hello2/t/00-basic.t]] file:
 
@@ -622,11 +646,11 @@ stdout_is { system("bin/example-hello2") } "How are you!\n", 'no arg';
 done_testing;
 #+end_src
 
-* Example3, 'Hello::World3'
+** Example3, 'Hello::World3'
 
 Version-aware module with Git integration and custom Makefile for easier management.
 
-** Create a new distribution
+*** Create a new distribution
 
 Create a new distribution skeleton:
 
@@ -654,7 +678,7 @@ Example-Hello3/
     └── hello3.t           # Test script
 #+end_src
 
-** Add README
+*** Add README
 
 Edit [[Example-Hello3/README.md]] file:
 
@@ -687,7 +711,7 @@ Run `make test`.
 - `make uninstall`: Uninstall the module.
 #+end_src
 
-** Add configuration file
+*** Add configuration file
 
 Edit [[Example-Hello3/dist.ini]] file:
 
@@ -714,7 +738,7 @@ first_version = 1.2.003
 ; minor = 001
 #+end_src
 
-** Add executable script
+*** Add executable script
 
 Edit [[Example-Hello3/bin/example-hello3]] file:
 
@@ -791,7 +815,7 @@ my $app = Example::App->new();
 $app->run();
 #+end_src
 
-** Add module
+*** Add module
 
 Edit [[Example-Hello3/lib/Example.pm]] file:
 
@@ -896,7 +920,7 @@ __END__
 Example::HowAreYou - Returns default message
 #+end_src
 
-** Add tests
+*** Add tests
 
 Edit [[Example-Hello3/t/00-basic.t]] file:
 
@@ -931,7 +955,7 @@ stdout_is { system("bin/example-hello3") } "How are you!\n", 'no arg';
 done_testing;
 #+end_src
 
-** Add Make-file
+*** Add Make-file
 
 Edit [[Example-Hello3/Makefile]] file:
 
@@ -1025,12 +1049,12 @@ make test
 make install
 #+end_src
 
-* Example4, 'Hello::World4'
+** Example4, 'Hello::World4'
 
 Comprehensive distribution with ExtUtils::MakeMaker compatibility and extensive plugin
 configuration.
 
-** Create a new distribution
+*** Create a new distribution
 
 #+begin_src shell-script
 dzil new Example::Hello4
@@ -1056,7 +1080,7 @@ Example-Hello4/
     └── hello4.t           # Test script
 #+end_src
 
-** Add README
+*** Add README
 
 Edit [[Example-Hello4/README.md]] file:
 
@@ -1083,7 +1107,7 @@ example-hello4 --version  # Shows version
 Run `dzil test --verbose`.
 #+end_src
 
-** Add configuration file
+*** Add configuration file
 
 Edit [[Example-Hello4/dist.ini]] file:
 
@@ -1121,7 +1145,7 @@ exclude_filename = Makefile.PL
 [Test::Compile]
 #+end_src
 
-** Add executable script
+*** Add executable script
 
 Edit [[Example-Hello4/bin/example-hello4]] file:
 
@@ -1198,7 +1222,7 @@ my $app = Example::App->new();
 $app->run();
 #+end_src
 
-** Add module
+*** Add module
 
 Edit [[Example-Hello4/lib/Example.pm]] file:
 
@@ -1303,7 +1327,7 @@ __END__
 Example::HowAreYou - Returns default message
 #+end_src
 
-** Add tests
+*** Add tests
 
 Edit [[Example-Hello4/t/00-basic.t]] file:
 
@@ -1338,7 +1362,7 @@ stdout_is { system("bin/example-hello4") } "How are you!\n", 'no arg';
 done_testing;
 #+end_src
 
-** Add Makefile.PL
+*** Add Makefile.PL
 
 Edit [[Example-Hello4/Makefile.PL]] file:
 
