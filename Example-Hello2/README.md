@@ -1,6 +1,6 @@
 # Example::Hello2
 
-A Perl package with an executable script that prints different messages based on command-line
+A Perl module with an executable script that prints different messages based on command-line
 arguments.
 
 ## Installation
