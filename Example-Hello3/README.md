@@ -1,6 +1,6 @@
 # Example::Hello3
 
-A Perl package with versioning and a script that prints messages based on arguments.
+A Perl module with versioning and a script that prints messages based on arguments.
 
 ## Installation
 1. Install Dist::Zilla and dependencies.
@@ -20,7 +20,7 @@ example-hello3 --version  # Shows version
 Run `make test`.
 
 ## Makefile Targets
-- `make build`: Build the package.
+- `make build`: Build the module.
 - `make test`: Run tests.
-- `make install`: Install the package.
-- `make uninstall`: Uninstall the package.
+- `make install`: Install the module.
+- `make uninstall`: Uninstall the module.

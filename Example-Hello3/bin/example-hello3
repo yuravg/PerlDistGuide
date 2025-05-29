@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Example;            # Main package to access the version
+use Example;            # Main module to access the version
 use Example::Hello;
 use Example::Bye;
 use Example::HowAreYou;
