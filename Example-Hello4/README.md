@@ -1,6 +1,6 @@
 # Example::Hello4
 
-A comprehensive Perl package.
+A comprehensive Perl module.
 
 ## Installation
 1. Install Dist::Zilla and dependencies.
