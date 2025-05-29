@@ -576,6 +576,7 @@ copyright_holder = Your Name
 version = 0.001
 
 [@Basic]
+[AutoPrereqs]
 
 [ExecDir]
 
@@ -739,7 +740,7 @@ copyright_year   = 2025
 version = 0.001
 
 [@Basic]
-
+[AutoPrereqs]
 [ExecDir]
 
 [PkgVersion]
@@ -1009,6 +1010,7 @@ copyright_year   = 2025
 ; version = 0.002
 
 [@Basic]
+[AutoPrereqs]
 
 [ExecDir]            ; Includes scripts from bin/
 
@@ -1410,6 +1412,7 @@ version = 0.001
 [GatherDir]
 exclude_filename = Makefile.PL
 
+[AutoPrereqs]
 [PruneCruft]
 [ManifestSkip]
 [MetaYAML]
