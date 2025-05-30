@@ -205,6 +205,10 @@ My-Module/
 └── t/
 #+end_src
 
+#+begin_src text
+Don't forget to add execute permission for your package's executable script.
+#+end_src
+
 ** Edit your Distribution
 
 *** Configure
