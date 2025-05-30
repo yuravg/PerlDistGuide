@@ -1,6 +1,6 @@
 # Example::Hello4
 
-A comprehensive Perl module.
+A Perl module with versioning and a script that prints messages based on arguments.
 
 ## Installation
 1. Install Dist::Zilla and dependencies.
