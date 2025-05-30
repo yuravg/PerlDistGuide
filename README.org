@@ -20,7 +20,7 @@ distributing Perl modules and distributions.
 - [[#basic-workflow][Basic Workflow]]
   - [[#create-a-new-distribution][Create a New Distribution]]
   - [[#edit-your-distribution][Edit your Distribution]]
-  - [[#build-test-release][Build, Test, Release]]
+  - [[#build-test][Build, Test]]
   - [[#install-and-uninstall][Install and Uninstall]]
   - [[#debug-your-code][Debug your code]]
   - [[#documentation][Documentation]]
@@ -281,7 +281,7 @@ Returns a greeting string.
 =cut
 #+end_src
 
-** Build, Test, Release
+** Build, Test
 *** Test Your Module
 
 Run tests:
@@ -941,7 +941,8 @@ done_testing;
 
 ** Example3, 'Hello::World3'
 
-Version-aware module with Git integration and custom Makefile for easier management.
+Multi-module with command-line arguments supporting different message types.
+Support Git integration and custom Makefile for easier management.
 
 *** Create a new distribution
 
@@ -1345,6 +1346,7 @@ make install
 
 ** Example4, 'Hello::World4'
 
+Multi-module with command-line arguments supporting different message types, support Git integration.
 Comprehensive distribution with ExtUtils::MakeMaker compatibility and extensive plugin
 configuration.
 
@@ -1381,7 +1383,7 @@ Edit [[Example-Hello4/README.md]] file:
 #+begin_src markdown :tangle Example-Hello4/README.md :mkdirp yes
 # Example::Hello4
 
-A comprehensive Perl module.
+A Perl module with versioning and a script that prints messages based on arguments.
 
 ## Installation
 1. Install Dist::Zilla and dependencies.
