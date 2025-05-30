@@ -13,18 +13,18 @@ distributing Perl modules and distributions.
 :CONTENTS:
 - [[#overview][Overview]]
 - [[#common-steps][Common Steps]]
-  - [[#install-distzilla][Install Dist::Zilla]]
-  - [[#environment-setup][Environment Setup]]
-  - [[#useful-commands][Useful Commands]]
+  - [[#install-distzilla-and-plugins][Install Dist::Zilla and Plugins]]
+  - [[#environment-configuration][Environment Configuration]]
+  - [[#create-dzil-global-configuration][Create Dzil Global Configuration]]
+  - [[#useful-commands-reference][Useful Commands Reference]]
 - [[#basic-workflow][Basic Workflow]]
   - [[#create-a-new-distribution][Create a New Distribution]]
-  - [[#configure-the-distribution][Configure the Distribution]]
-  - [[#modify-your-module][Modify Your Module]]
-  - [[#test-your-module][Test Your Module]]
-  - [[#build-your-module][Build Your Module]]
+  - [[#edit-your-distribution][Edit your Distribution]]
+  - [[#build-test-release][Build, Test, Release]]
   - [[#install-and-uninstall][Install and Uninstall]]
   - [[#debug-your-code][Debug your code]]
-  - [[#read-documentation][Read documentation]]
+  - [[#documentation][Documentation]]
+  - [[#plugin-configuration][Plugin Configuration]]
 - [[#examples][Examples]]
   - [[#example1-helloworld][Example1, 'Hello::World']]
   - [[#example2-helloworld2][Example2, 'Hello::World2']]
@@ -205,9 +205,11 @@ My-Module/
 └── t/
 #+end_src
 
-** Configure the Distribution
+** Edit your Distribution
 
-Create =dist.ini= file to define your module metadata:
+*** Configure
+
+Create/edit =dist.ini= file to define your module metadata:
 
 #+begin_src conf-windows
 name    = My-Module
@@ -221,7 +223,9 @@ version = 0.001
 [PkgVersion]
 #+end_src
 
-** Modify Your Module
+*** Module
+
+Create/edit your module:
 
 #+begin_src cperl
 package My::Module;
@@ -543,7 +547,7 @@ Example-Hello/
 
 Edit [[Example-Hello/README.md]] file:
 
-#+begin_src markdown :tangle Example-Hello/README.md
+#+begin_src markdown :tangle Example-Hello/README.md :mkdirp yes
 # Example::Hello
 
 A simple Perl module that prints "Hello World!" via an executable script.
@@ -568,7 +572,7 @@ Run `dzil test` to verify functionality.
 
 Edit [[Example-Hello/dist.ini]] file:
 
-#+begin_src conf-windows :tangle Example-Hello/dist.ini
+#+begin_src conf-windows :tangle Example-Hello/dist.ini :mkdirp yes
 name    = Example-Hello
 author  = Your Name <email@example.com>
 license = Perl_5
@@ -595,7 +599,7 @@ chmod +x bin/example-hello
 
 Edit [[Example-Hello/bin/example-hello]] file:
 
-#+begin_src cperl :tangle Example-Hello/bin/example-hello
+#+begin_src cperl :tangle Example-Hello/bin/example-hello :mkdirp yes
 #!/usr/bin/env perl
 
 use warnings;
@@ -611,7 +615,7 @@ print Example::Hello::hello() . "\n";
 
 Edit [[Example-Hello/lib/Example/Hello.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello/lib/Example/Hello.pm
+#+begin_src cperl :tangle Example-Hello/lib/Example/Hello.pm :mkdirp yes
 package Example::Hello;
 use strict;
 use warnings;
@@ -643,7 +647,7 @@ A simple module that returns a greeting.
 
 Edit [[Example-Hello/t/hello.t]] file:
 
-#+begin_src cperl :tangle Example-Hello/t/hello.t
+#+begin_src cperl :tangle Example-Hello/t/hello.t :mkdirp yes
 use Test::More;
 use Test::Output;
 
@@ -703,7 +707,7 @@ Example-Hello2/
 
 Edit [[Example-Hello2/README.md]] file:
 
-#+begin_src markdown :tangle Example-Hello2/README.md
+#+begin_src markdown :tangle Example-Hello2/README.md :mkdirp yes
 # Example::Hello2
 
 A Perl module with an executable script that prints different messages based on command-line
@@ -730,7 +734,7 @@ Run `dzil test` to execute tests.
 
 Edit [[Example-Hello2/dist.ini]] file:
 
-#+begin_src conf-windows :tangle Example-Hello2/dist.ini
+#+begin_src conf-windows :tangle Example-Hello2/dist.ini :mkdirp yes
 name    = Example-Hello2
 author  = Your Name <email@example.com>
 license = Perl_5
@@ -750,7 +754,7 @@ version = 0.001
 
 Edit [[Example-Hello2/bin/example-hello2]] file:
 
-#+begin_src cperl :tangle Example-Hello2/bin/example-hello2
+#+begin_src cperl :tangle Example-Hello2/bin/example-hello2 :mkdirp yes
 #!/usr/bin/env perl
 
 use warnings;
@@ -830,7 +834,7 @@ print $obj->message . "!\n";
 
 Edit [[Example-Hello2/lib/Example/Bye.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello2/lib/Example/Bye.pm
+#+begin_src cperl :tangle Example-Hello2/lib/Example/Bye.pm :mkdirp yes
 package Example::Bye;
 
 use strict;
@@ -851,7 +855,7 @@ Example::Bye - Returns a "Goodbye" message
 
 Edit [[Example-Hello2/lib/Example/Hello.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello2/lib/Example/Hello.pm
+#+begin_src cperl :tangle Example-Hello2/lib/Example/Hello.pm :mkdirp yes
 package Example::Hello;
 
 use strict;
@@ -877,7 +881,7 @@ Example::Hello - Returns a "Hello World!" message
 
 Edit [[Example-Hello2/lib/Example/HowAreYou.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello2/lib/Example/HowAreYou.pm
+#+begin_src cperl :tangle Example-Hello2/lib/Example/HowAreYou.pm :mkdirp yes
 package Example::HowAreYou;
 
 use strict;
@@ -900,7 +904,7 @@ Example::HowAreYou - Returns default message
 
 Edit [[Example-Hello2/t/00-basic.t]] file:
 
-#+begin_src cperl :tangle Example-Hello2/t/00-basic.t
+#+begin_src cperl :tangle Example-Hello2/t/00-basic.t :mkdirp yes
 use Test::More;
 use Example::Hello;
 use Example::Bye;
@@ -920,7 +924,7 @@ done_testing;
 
 Edit [[Example-Hello2/t/hello2.t]] file:
 
-#+begin_src cperl :tangle Example-Hello2/t/hello2.t
+#+begin_src cperl :tangle Example-Hello2/t/hello2.t :mkdirp yes
 use Test::More;
 use Test::Output;
 
@@ -967,7 +971,7 @@ Example-Hello3/
 
 Edit [[Example-Hello3/README.md]] file:
 
-#+begin_src markdown :tangle Example-Hello3/README.md
+#+begin_src markdown :tangle Example-Hello3/README.md :mkdirp yes
 # Example::Hello3
 
 A Perl module with versioning and a script that prints messages based on arguments.
@@ -1000,7 +1004,7 @@ Run `make test`.
 
 Edit [[Example-Hello3/dist.ini]] file:
 
-#+begin_src conf-windows :tangle Example-Hello3/dist.ini
+#+begin_src conf-windows :tangle Example-Hello3/dist.ini :mkdirp yes
 name    = Example-Hello3
 author  = Your Name <email@example.com>
 license = Perl_5
@@ -1028,7 +1032,7 @@ first_version = 1.2.003
 
 Edit [[Example-Hello3/bin/example-hello3]] file:
 
-#+begin_src cperl :tangle Example-Hello3/bin/example-hello3
+#+begin_src cperl :tangle Example-Hello3/bin/example-hello3 :mkdirp yes
 #!/usr/bin/env perl
 
 use strict;
@@ -1105,7 +1109,7 @@ $app->run();
 
 Edit [[Example-Hello3/lib/Example.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello3/lib/Example.pm
+#+begin_src cperl :tangle Example-Hello3/lib/Example.pm :mkdirp yes
 package Example;
 
 use strict;
@@ -1134,7 +1138,7 @@ Example::version - Returns script version
 
 Edit [[Example-Hello3/lib/Example/Bye.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello3/lib/Example/Bye.pm
+#+begin_src cperl :tangle Example-Hello3/lib/Example/Bye.pm :mkdirp yes
 package Example::Bye;
 
 use strict;
@@ -1157,7 +1161,7 @@ Example::Bye - Returns a "Goodbye" message
 
 Edit [[Example-Hello3/lib/Example/Hello.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello3/lib/Example/Hello.pm
+#+begin_src cperl :tangle Example-Hello3/lib/Example/Hello.pm :mkdirp yes
 package Example::Hello;
 
 use strict;
@@ -1185,7 +1189,7 @@ Example::Hello - Returns a "Hello World!" message
 
 Edit [[Example-Hello3/lib/Example/HowAreYou.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello3/lib/Example/HowAreYou.pm
+#+begin_src cperl :tangle Example-Hello3/lib/Example/HowAreYou.pm :mkdirp yes
 package Example::HowAreYou;
 
 use strict;
@@ -1210,7 +1214,7 @@ Example::HowAreYou - Returns default message
 
 Edit [[Example-Hello3/t/00-basic.t]] file:
 
-#+begin_src cperl :tangle Example-Hello3/t/00-basic.t
+#+begin_src cperl :tangle Example-Hello3/t/00-basic.t :mkdirp yes
 use Test::More;
 use Example::Hello;
 use Example::Bye;
@@ -1230,7 +1234,7 @@ done_testing;
 
 [[Example-Hello3/t/hello3.t]]
 
-#+begin_src cperl :tangle Example-Hello3/t/hello3.t
+#+begin_src cperl :tangle Example-Hello3/t/hello3.t :mkdirp yes
 use Test::More;
 use Test::Output;
 
@@ -1245,7 +1249,7 @@ done_testing;
 
 Edit [[Example-Hello3/Makefile]] file:
 
-#+begin_src makefile :tangle Example-Hello3/Makefile
+#+begin_src makefile :tangle Example-Hello3/Makefile :mkdirp yes
 # Makefile for managing a Perl distribution with Dist::Zilla
 
 DIST_NAME := $(shell perl -ne 'print $$1 if /^name\s*=\s*(\S+)/' dist.ini)
@@ -1370,7 +1374,7 @@ Example-Hello4/
 
 Edit [[Example-Hello4/README.md]] file:
 
-#+begin_src markdown :tangle Example-Hello4/README.md
+#+begin_src markdown :tangle Example-Hello4/README.md :mkdirp yes
 # Example::Hello4
 
 A comprehensive Perl module.
@@ -1397,7 +1401,7 @@ Run `dzil test --verbose`.
 
 Edit [[Example-Hello4/dist.ini]] file:
 
-#+begin_src conf-windows :tangle Example-Hello4/dist.ini
+#+begin_src conf-windows :tangle Example-Hello4/dist.ini :mkdirp yes
 name    = Example-Hello4
 author  = Your Name <email@example.com>
 license = Perl_5
@@ -1436,7 +1440,7 @@ exclude_filename = Makefile.PL
 
 Edit [[Example-Hello4/bin/example-hello4]] file:
 
-#+begin_src cperl :tangle Example-Hello4/bin/example-hello4
+#+begin_src cperl :tangle Example-Hello4/bin/example-hello4 :mkdirp yes
 #!/usr/bin/env perl
 
 use strict;
@@ -1513,7 +1517,7 @@ $app->run();
 
 Edit [[Example-Hello4/lib/Example.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello4/lib/Example.pm
+#+begin_src cperl :tangle Example-Hello4/lib/Example.pm :mkdirp yes
 package Example;
 
 use strict;
@@ -1542,7 +1546,7 @@ Example::version - Returns script version
 
 Edit [[Example-Hello4/lib/Example/Bye.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello4/lib/Example/Bye.pm
+#+begin_src cperl :tangle Example-Hello4/lib/Example/Bye.pm :mkdirp yes
 package Example::Bye;
 
 use strict;
@@ -1565,7 +1569,7 @@ Example::Bye - Returns a "Goodbye" message
 
 Edit [[Example-Hello4/lib/Example/Hello.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello4/lib/Example/Hello.pm
+#+begin_src cperl :tangle Example-Hello4/lib/Example/Hello.pm :mkdirp yes
 package Example::Hello;
 
 use strict;
@@ -1593,7 +1597,7 @@ Example::Hello - Returns a "Hello World!" message
 
 Edit [[Example-Hello4/lib/Example/HowAreYou.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello4/lib/Example/HowAreYou.pm
+#+begin_src cperl :tangle Example-Hello4/lib/Example/HowAreYou.pm :mkdirp yes
 package Example::HowAreYou;
 
 use strict;
@@ -1618,7 +1622,7 @@ Example::HowAreYou - Returns default message
 
 Edit [[Example-Hello4/t/00-basic.t]] file:
 
-#+begin_src cperl :tangle Example-Hello4/t/00-basic.t
+#+begin_src cperl :tangle Example-Hello4/t/00-basic.t :mkdirp yes
 use Test::More;
 use Example::Hello;
 use Example::Bye;
@@ -1638,7 +1642,7 @@ done_testing;
 
 [[Example-Hello4/t/hello4.t]]
 
-#+begin_src cperl :tangle Example-Hello4/t/hello4.t
+#+begin_src cperl :tangle Example-Hello4/t/hello4.t :mkdirp yes
 use Test::More;
 use Test::Output;
 
@@ -1653,7 +1657,7 @@ done_testing;
 
 Edit [[Example-Hello4/Makefile.PL]] file:
 
-#+begin_src cperl :tangle Example-Hello4/Makefile.PL
+#+begin_src cperl :tangle Example-Hello4/Makefile.PL :mkdirp yes
 use ExtUtils::MakeMaker qw(WriteMakefile);
 
 WriteMakefile(
