@@ -153,6 +153,9 @@ dzil listdeps              # List dependencies
 perl -Ilib bin/script      # Run script with local lib
 prove -lv t/               # Run tests directly
 perlcritic lib/            # Run Perl::Critic
+## Build then run develop
+dzil build
+perl -IPackageNameVersion/lib PackageNameVersion/bin/script-name
 
 # Debugging
 DZIL_TRACE=1 dzil build    # Trace plugin execution
