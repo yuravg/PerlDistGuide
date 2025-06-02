@@ -32,6 +32,7 @@ distributing Perl modules and distributions.
   - [[#example2-helloworld2][Example2, 'Hello::World2']]
   - [[#example3-helloworld3][Example3, 'Hello::World3']]
   - [[#example4-helloworld4][Example4, 'Hello::World4']]
+  - [[#example5-helloworld5][Example5, 'Hello::World5']]
 :END:
 
 * Overview
@@ -1706,5 +1707,348 @@ WriteMakefile(
     },
     test             => {TESTS => 't/*.t'},
     EXE_FILES        => ['bin/example-hello4'],
+   );
+#+end_src
+
+** Example5, 'Hello::World5'
+
+Multi-module with command-line arguments supporting different message types, support Git integration.
+Comprehensive distribution with ExtUtils::MakeMaker compatibility and extensive plugin
+configuration.
+
+*** Create a new distribution
+
+#+begin_src shell-script
+dzil new Example::Hello5
+#+end_src
+
+*Directory Structure(after edit/add files)*
+
+#+begin_src text
+Example-Hello5/
+├── README.md
+├── Makefile.PL
+├── dist.ini
+├── bin/
+│   └── example-hello5     # The executable script
+├── lib/
+│   ├── CLI.pm             # CLI paser, help message
+│   └── Example/
+│       ├── Hello.pm       # Hello message
+│       ├── Bye.pm         # Goodbye message
+│       └── HowAreYou.pm   # Default message
+└── t/
+    ├── 00-basic.t         # Test classes
+    └── hello5.t           # Test script
+#+end_src
+
+*** Add README
+
+Edit [[Example-Hello5/README.md]] file:
+
+#+begin_src markdown :tangle Example-Hello5/README.md :mkdirp yes
+# Example::Hello5
+
+A Perl module with versioning and a script that prints messages based on arguments.
+
+## Installation
+1. Install Dist::Zilla and dependencies.
+2. Run `dzil build`.
+3. Run `dzil install`.
+
+## Usage
+Run the script:
+```bash
+example-hello5 hello      # Outputs: Hello World!!
+example-hello5 bye        # Outputs: Goodbye!
+example-hello5            # Outputs: How are you!
+example-hello5 --version  # Shows version
+```
+
+## Testing
+Run `dzil test --verbose`.
+#+end_src
+
+*** Add configuration file
+
+Edit [[Example-Hello5/dist.ini]] file:
+
+#+begin_src conf-windows :tangle Example-Hello5/dist.ini :mkdirp yes
+name    = Example-Hello5
+author  = Your Name <email@example.com>
+license = Perl_5
+copyright_holder = Your Name
+copyright_year   = 2025
+
+version = 0.001
+
+; Then use OurPkgVersion to insert it into the module files
+[OurPkgVersion]
+
+[GatherDir]
+exclude_filename = Makefile.PL
+
+[AutoPrereqs]
+[PruneCruft]
+[ManifestSkip]
+[MetaYAML]
+[MetaJSON]
+[License]
+[Readme]
+[ExtraTests]
+[ExecDir]
+[ShareDir]
+[MakeMaker]
+[Manifest]
+[TestRelease]
+[ConfirmRelease]
+[UploadToCPAN]
+
+; Testing plugins
+[Test::Compile]
+#+end_src
+
+*** Add executable script
+
+Edit [[Example-Hello5/bin/example-hello5]] file:
+
+#+begin_src cperl :tangle Example-Hello5/bin/example-hello5 :mkdirp yes
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use FindBin qw($Bin);
+use lib "$Bin/../lib";
+use Example::CLI;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+# Let the CLI module handle everything
+exit Example::CLI->new()->run(@ARGV);
+#+end_src
+
+#+begin_src shell-script
+# Add execute permission:
+sudo chmod +x bin/example-hello5
+#+end_src
+
+*** Add module
+
+Edit [[Example-Hello5/lib/Example/CLI.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello5/lib/Example/CLI.pm :mkdirp yes
+package Example::CLI;
+
+use strict;
+use warnings;
+
+use File::Basename qw(basename);
+
+use Example::Handler::Hello;
+use Example::Handler::Bye;
+use Example::Handler::HowAreYou;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+# ABSTRACT: CLI, help
+
+use Getopt::Long qw(GetOptions);
+
+sub new {
+    my $class = shift;
+    return bless {}, $class;
+}
+
+sub run {
+    my ($self, @args) = @_;
+
+    my $script_name = basename($0);
+
+    my %opts = (
+        hello => 'Example::Handler::Hello',
+        bye   => 'Example::Handler::Bye',
+        how   => 'Example::Handler::HowAreYou',
+       );
+
+    my ($help, $version);
+    GetOptions(
+        'h|help'    => \$help,
+        'v|version' => \$version,
+       );
+
+    if ($version) {
+        my $version = $Example::CLI::VERSION || 'development';
+        print "$script_name version $version\n";
+        exit 0;
+    }
+
+    if ($help) {
+        $self->show_help();
+        exit 0;
+    }
+
+    # Get action from command-line argument
+    my $action = shift @ARGV || 'how';
+    my $class  = $opts{$action} // 'Example::Handler::HowAreYou';
+
+    # Run the selected action
+    my $obj = $class->new;
+    print $obj->message . "!\n";
+}
+
+sub show_help {
+    print <<"HELP";
+Usage: $0 [options] [hello|bye|how]
+
+Options:
+  -h, --help      Show this help message
+  -v, --version   Display the script version
+
+Commands:
+  hello           Say hello
+  bye             Say goodbye
+  how             Ask how are you (default)
+HELP
+}
+
+1;
+#+end_src
+
+Edit [[Example-Hello5/lib/Example/Handler/Bye.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello5/lib/Example/Handler/Bye.pm :mkdirp yes
+package Example::Handler::Bye;
+
+use strict;
+use warnings;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+sub new { bless {}, shift }
+
+sub message { "Goodbye" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::Handler::Bye - Returns a "Goodbye" message
+#+end_src
+
+Edit [[Example-Hello5/lib/Example/Handler/Hello.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello5/lib/Example/Handler/Hello.pm :mkdirp yes
+package Example::Handler::Hello;
+
+use strict;
+use warnings;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+sub new { bless {}, shift }
+
+sub message { "Hello World!" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::Handler::Hello - Returns a "Hello World!" message
+
+=head1 SYNOPSIS
+
+  my $hello = Example::Handler::Hello->new;
+  print $hello->message;
+#+end_src
+
+Edit [[Example-Hello5/lib/Example/Handler/HowAreYou.pm]] file:
+
+#+begin_src cperl :tangle Example-Hello5/lib/Example/Handler/HowAreYou.pm :mkdirp yes
+package Example::Handler::HowAreYou;
+
+use strict;
+use warnings;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+sub new { bless {}, shift }
+
+sub message { "How are you" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example::Handler::HowAreYou - Returns default message
+#+end_src
+
+*** Add tests
+
+Edit [[Example-Hello5/t/00-basic.t]] file:
+
+#+begin_src cperl :tangle Example-Hello5/t/00-basic.t :mkdirp yes
+use Test::More;
+use Example::Handler::Hello;
+use Example::Handler::Bye;
+use Example::Handler::HowAreYou;
+
+my $hello = Example::Handler::Hello->new;
+is($hello->message, 'Hello World!', 'Hello message works');
+
+my $bye = Example::Handler::Bye->new;
+is($bye->message, 'Goodbye', 'Bye message works');
+
+my $default = Example::Handler::HowAreYou->new;
+is($default->message, 'How are you', 'Default message works');
+
+done_testing;
+#+end_src
+
+[[Example-Hello5/t/hello5.t]]
+
+#+begin_src cperl :tangle Example-Hello5/t/hello5.t :mkdirp yes
+use Test::More;
+use Test::Output;
+
+stdout_is { system("bin/example-hello5 hello") } "Hello World!!\n", 'hello arg';
+stdout_is { system("bin/example-hello5 bye") } "Goodbye!\n", 'bye arg';
+stdout_is { system("bin/example-hello5") } "How are you!\n", 'no arg';
+
+done_testing;
+#+end_src
+
+*** Add Makefile.PL
+
+Edit [[Example-Hello5/Makefile.PL]] file:
+
+#+begin_src cperl :tangle Example-Hello5/Makefile.PL :mkdirp yes
+use ExtUtils::MakeMaker qw(WriteMakefile);
+
+WriteMakefile(
+    NAME             => 'Example::Hello5',
+    AUTHOR           => 'Your Name <your.email@example.com>',
+    VERSION_FROM     => 'lib/Example.pm',
+    ABSTRACT_FROM    => 'lib/Example.pm',
+    LICENSE          => 'perl',
+    MIN_PERL_VERSION => '5.010',
+    PREREQ_PM        => {
+        'strict'          => 0,
+        'warnings'        => 0,
+        'Path::Tiny'      => 0,
+        # Add other dependencies
+    },
+    TEST_REQUIRES    => {
+        'Test::More'        => 0,
+        'Test::Differences' => 0,
+        'Path::Tiny'        => 0,
+    },
+    test             => {TESTS => 't/*.t'},
+    EXE_FILES        => ['bin/example-hello5'],
    );
 #+end_src
