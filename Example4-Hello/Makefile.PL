@@ -1,10 +1,10 @@
 use ExtUtils::MakeMaker qw(WriteMakefile);
 
 WriteMakefile(
-    NAME             => 'Example::Hello4',
+    NAME             => 'Example::Hello',
     AUTHOR           => 'Your Name <your.email@example.com>',
-    VERSION_FROM     => 'lib/Example.pm',
-    ABSTRACT_FROM    => 'lib/Example.pm',
+    VERSION_FROM     => 'lib/Example4.pm',
+    ABSTRACT_FROM    => 'lib/Example4.pm',
     LICENSE          => 'perl',
     MIN_PERL_VERSION => '5.010',
     PREREQ_PM        => {
@@ -19,5 +19,5 @@ WriteMakefile(
         'Path::Tiny'        => 0,
     },
     test             => {TESTS => 't/*.t'},
-    EXE_FILES        => ['bin/example-hello4'],
+    EXE_FILES        => ['bin/example4-hello'],
    );
