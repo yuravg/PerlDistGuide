@@ -30,7 +30,7 @@ distributing Perl modules and distributions.
 - [[#examples][Examples]]
   - [[#example1-hello-basic-script][Example1-hello: basic script]]
   - [[#example2-hello-multi-module-cli][Example2-hello: multi-module, CLI]]
-  - [[#example3-helloworld3][Example3, 'Hello::World3']]
+  - [[#fixme-example3-hello-multi-module-cli-makefile][FIXME: Example3-hello: multi-module, CLI, Makefile]]
   - [[#example4-helloworld4][Example4, 'Hello::World4']]
 :END:
 
@@ -949,7 +949,7 @@ stdout_is { system("bin/example2-hello") } "How are you!\n", 'no arg';
 done_testing;
 #+end_src
 
-** Example3, 'Hello::World3'
+** FIXME: Example3-hello: multi-module, CLI, Makefile
 
 Multi-module with command-line arguments supporting different message types.
 Support Git integration and custom Makefile for easier management.
@@ -959,35 +959,35 @@ Support Git integration and custom Makefile for easier management.
 Create a new distribution skeleton:
 
 #+begin_src shell-script
-dzil new Example::Hello3
+dzil new Example3::Hello
 #+end_src
 
 *Directory Structure(after edit/add files)*
 
 #+begin_src text
-Example-Hello3/
+Example3-Hello/
 ├── README.md
 ├── Makefile
 ├── dist.ini
 ├── bin/
-│   └── example-hello3     # The executable script
+│   └── example3-hello     # The executable script
 ├── lib/
-|   ├───Example.pm
-│   └── Example/
+|   ├───Example3.pm
+│   └── Example3/
 │       ├── Hello.pm       # Hello message
 │       ├── Bye.pm         # Goodbye message
 │       └── HowAreYou.pm   # Default message
 └── t/
     ├── 00-basic.t         # Test classes
-    └── hello3.t           # Test script
+    └── hello.t           # Test script
 #+end_src
 
 *** Add README
 
-Edit [[Example-Hello3/README.md]] file:
+Edit [[Example3-Hello/README.md]] file:
 
-#+begin_src markdown :tangle Example-Hello3/README.md :mkdirp yes
-# Example::Hello3
+#+begin_src markdown :tangle Example3-Hello/README.md :mkdirp yes
+# Example3::Hello
 
 A Perl module with versioning and a script that prints messages based on arguments.
 
@@ -999,10 +999,10 @@ A Perl module with versioning and a script that prints messages based on argumen
 ## Usage
 Run the script:
 ```bash
-example-hello3 hello      # Outputs: Hello World!!
-example-hello3 bye        # Outputs: Goodbye!
-example-hello3            # Outputs: How are you!
-example-hello3 --version  # Shows version
+example3-hello hello      # Outputs: Hello World!!
+example3-hello bye        # Outputs: Goodbye!
+example3-hello            # Outputs: How are you!
+example3-hello --version  # Shows version
 ```
 
 ## Testing
@@ -1017,10 +1017,10 @@ Run `make test`.
 
 *** Add configuration file
 
-Edit [[Example-Hello3/dist.ini]] file:
+Edit [[Example3-Hello/dist.ini]] file:
 
-#+begin_src conf-windows :tangle Example-Hello3/dist.ini :mkdirp yes
-name    = Example-Hello3
+#+begin_src conf-windows :tangle Example3-Hello/dist.ini :mkdirp yes
+name    = Example3-Hello
 author  = Your Name <email@example.com>
 license = Perl_5
 copyright_holder = Your Name
@@ -1045,22 +1045,22 @@ first_version = 1.2.003
 
 *** Add executable script
 
-Edit [[Example-Hello3/bin/example-hello3]] file:
+Edit [[Example3-Hello/bin/example3-hello]] file:
 
-#+begin_src cperl :tangle Example-Hello3/bin/example-hello3 :mkdirp yes
+#+begin_src cperl :tangle Example3-Hello/bin/example3-hello :mkdirp yes
 #!/usr/bin/env perl
 
 use strict;
 use warnings;
 
-use Example;            # Main module to access the version
-use Example::Hello;
-use Example::Bye;
-use Example::HowAreYou;
+use Example3;            # Main module to access the version
+use Example3::Hello;
+use Example3::Bye;
+use Example3::HowAreYou;
 
 # VERSION   <- Allows Dist::Zilla to inject the version
 
-package Example::App;
+package Example3::App;
 
 use Getopt::Long qw(GetOptions);
 
@@ -1070,9 +1070,9 @@ sub run {
     my ($self) = @_;
 
     my %actions = (
-        hello => 'Example::Hello',
-        bye   => 'Example::Bye',
-        how   => 'Example::HowAreYou',
+        hello => 'Example3::Hello',
+        bye   => 'Example3::Bye',
+        how   => 'Example3::HowAreYou',
        );
 
     my ($help, $version);
@@ -1082,7 +1082,7 @@ sub run {
        );
 
     if ($version) {
-        print "'Example' version: " . Example->version() . "\n";
+        print "'Example3' version: " . Example3->version() . "\n";
         exit 0;
     }
 
@@ -1093,7 +1093,7 @@ sub run {
 
     # Get action from command-line argument
     my $action = shift @ARGV || 'how';
-    my $class  = $actions{$action} // 'Example::HowAreYou';
+    my $class  = $actions{$action} // 'Example3::HowAreYou';
 
     # Run the selected action
     my $obj = $class->new;
@@ -1116,21 +1116,21 @@ HELP
 }
 
 # Run the script
-my $app = Example::App->new();
+my $app = Example3::App->new();
 $app->run();
 #+end_src
 
 #+begin_src shell-script
 # Add execute permission:
-sudo chmod +x bin/example-hello3
+sudo chmod +x bin/example3-hello
 #+end_src
 
 *** Add module
 
-Edit [[Example-Hello3/lib/Example.pm]] file:
+Edit [[Example3-Hello/lib/Example3.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello3/lib/Example.pm :mkdirp yes
-package Example;
+#+begin_src cperl :tangle Example3-Hello/lib/Example3.pm :mkdirp yes
+package Example3;
 
 use strict;
 use warnings;
@@ -1153,13 +1153,13 @@ __END__
 
 =head1 NAME
 
-Example::version - Returns script version
+Example3::version - Returns script version
 #+end_src
 
-Edit [[Example-Hello3/lib/Example/Bye.pm]] file:
+Edit [[Example3-Hello/lib/Example3/Bye.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello3/lib/Example/Bye.pm :mkdirp yes
-package Example::Bye;
+#+begin_src cperl :tangle Example3-Hello/lib/Example3/Bye.pm :mkdirp yes
+package Example3::Bye;
 
 use strict;
 use warnings;
@@ -1176,13 +1176,13 @@ __END__
 
 =head1 NAME
 
-Example::Bye - Returns a "Goodbye" message
+Example3::Bye - Returns a "Goodbye" message
 #+end_src
 
-Edit [[Example-Hello3/lib/Example/Hello.pm]] file:
+Edit [[Example3-Hello/lib/Example3/Hello.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello3/lib/Example/Hello.pm :mkdirp yes
-package Example::Hello;
+#+begin_src cperl :tangle Example3-Hello/lib/Example3/Hello.pm :mkdirp yes
+package Example3::Hello;
 
 use strict;
 use warnings;
@@ -1199,18 +1199,18 @@ __END__
 
 =head1 NAME
 
-Example::Hello - Returns a "Hello World!" message
+Example3::Hello - Returns a "Hello World!" message
 
 =head1 SYNOPSIS
 
-  my $hello = Example::Hello->new;
+  my $hello = Example3::Hello->new;
   print $hello->message;
 #+end_src
 
-Edit [[Example-Hello3/lib/Example/HowAreYou.pm]] file:
+Edit [[Example3-Hello/lib/Example3/HowAreYou.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello3/lib/Example/HowAreYou.pm :mkdirp yes
-package Example::HowAreYou;
+#+begin_src cperl :tangle Example3-Hello/lib/Example3/HowAreYou.pm :mkdirp yes
+package Example3::HowAreYou;
 
 use strict;
 use warnings;
@@ -1227,49 +1227,49 @@ __END__
 
 =head1 NAME
 
-Example::HowAreYou - Returns default message
+Example3::HowAreYou - Returns default message
 #+end_src
 
 *** Add tests
 
-Edit [[Example-Hello3/t/00-basic.t]] file:
+Edit [[Example3-Hello/t/00-basic.t]] file:
 
-#+begin_src cperl :tangle Example-Hello3/t/00-basic.t :mkdirp yes
+#+begin_src cperl :tangle Example3-Hello/t/00-basic.t :mkdirp yes
 use Test::More;
-use Example::Hello;
-use Example::Bye;
-use Example::HowAreYou;
+use Example3::Hello;
+use Example3::Bye;
+use Example3::HowAreYou;
 
-my $hello = Example::Hello->new;
+my $hello = Example3::Hello->new;
 is($hello->message, 'Hello World!', 'Hello message works');
 
-my $bye = Example::Bye->new;
+my $bye = Example3::Bye->new;
 is($bye->message, 'Goodbye', 'Bye message works');
 
-my $default = Example::HowAreYou->new;
+my $default = Example3::HowAreYou->new;
 is($default->message, 'How are you', 'Default message works');
 
 done_testing;
 #+end_src
 
-[[Example-Hello3/t/hello3.t]]
+[[Example3-Hello/t/hello.t]]
 
-#+begin_src cperl :tangle Example-Hello3/t/hello3.t :mkdirp yes
+#+begin_src cperl :tangle Example3-Hello/t/hello.t :mkdirp yes
 use Test::More;
 use Test::Output;
 
-stdout_is { system("bin/example-hello3 hello") } "Hello World!!\n", 'hello arg';
-stdout_is { system("bin/example-hello3 bye") } "Goodbye!\n", 'bye arg';
-stdout_is { system("bin/example-hello3") } "How are you!\n", 'no arg';
+stdout_is { system("bin/example3-hello hello") } "Hello World!!\n", 'hello arg';
+stdout_is { system("bin/example3-hello bye") } "Goodbye!\n", 'bye arg';
+stdout_is { system("bin/example3-hello") } "How are you!\n", 'no arg';
 
 done_testing;
 #+end_src
 
 *** Add Make-file
 
-Edit [[Example-Hello3/Makefile]] file:
+Edit [[Example3-Hello/Makefile]] file:
 
-#+begin_src makefile :tangle Example-Hello3/Makefile :mkdirp yes
+#+begin_src makefile :tangle Example3-Hello/Makefile :mkdirp yes
 # Makefile for managing a Perl distribution with Dist::Zilla
 
 DIST_NAME := $(shell perl -ne 'print $$1 if /^name\s*=\s*(\S+)/' dist.ini)

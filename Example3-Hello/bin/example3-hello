@@ -3,14 +3,14 @@
 use strict;
 use warnings;
 
-use Example;            # Main module to access the version
-use Example::Hello;
-use Example::Bye;
-use Example::HowAreYou;
+use Example3;            # Main module to access the version
+use Example3::Hello;
+use Example3::Bye;
+use Example3::HowAreYou;
 
 # VERSION   <- Allows Dist::Zilla to inject the version
 
-package Example::App;
+package Example3::App;
 
 use Getopt::Long qw(GetOptions);
 
@@ -20,9 +20,9 @@ sub run {
     my ($self) = @_;
 
     my %actions = (
-        hello => 'Example::Hello',
-        bye   => 'Example::Bye',
-        how   => 'Example::HowAreYou',
+        hello => 'Example3::Hello',
+        bye   => 'Example3::Bye',
+        how   => 'Example3::HowAreYou',
        );
 
     my ($help, $version);
@@ -32,7 +32,7 @@ sub run {
        );
 
     if ($version) {
-        print "'Example' version: " . Example->version() . "\n";
+        print "'Example3' version: " . Example3->version() . "\n";
         exit 0;
     }
 
@@ -43,7 +43,7 @@ sub run {
 
     # Get action from command-line argument
     my $action = shift @ARGV || 'how';
-    my $class  = $actions{$action} // 'Example::HowAreYou';
+    my $class  = $actions{$action} // 'Example3::HowAreYou';
 
     # Run the selected action
     my $obj = $class->new;
@@ -66,5 +66,5 @@ HELP
 }
 
 # Run the script
-my $app = Example::App->new();
+my $app = Example3::App->new();
 $app->run();

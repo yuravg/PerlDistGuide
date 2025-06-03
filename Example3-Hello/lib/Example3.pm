@@ -1,4 +1,4 @@
-package Example;
+package Example3;
 
 use strict;
 use warnings;
@@ -21,4 +21,4 @@ __END__
 
 =head1 NAME
 
-Example::version - Returns script version
+Example3::version - Returns script version

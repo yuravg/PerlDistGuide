@@ -1,4 +1,4 @@
-# Example::Hello3
+# Example3::Hello
 
 A Perl module with versioning and a script that prints messages based on arguments.
 
@@ -10,10 +10,10 @@ A Perl module with versioning and a script that prints messages based on argumen
 ## Usage
 Run the script:
 ```bash
-example-hello3 hello      # Outputs: Hello World!!
-example-hello3 bye        # Outputs: Goodbye!
-example-hello3            # Outputs: How are you!
-example-hello3 --version  # Shows version
+example3-hello hello      # Outputs: Hello World!!
+example3-hello bye        # Outputs: Goodbye!
+example3-hello            # Outputs: How are you!
+example3-hello --version  # Shows version
 ```
 
 ## Testing
