@@ -4,15 +4,15 @@ use warnings;
 use strict;
 use Getopt::Long;
 
-use Example::Hello;
-use Example::Bye;
-use Example::HowAreYou;
+use Example2::Hello;
+use Example2::Bye;
+use Example2::HowAreYou;
 
 # Available actions
 my %actions = (
-    hello => 'Example::Hello',
-    bye   => 'Example::Bye',
-    how   => 'Example::HowAreYou',
+    hello => 'Example2::Hello',
+    bye   => 'Example2::Bye',
+    how   => 'Example2::HowAreYou',
 );
 
 # Handle help option
@@ -33,7 +33,7 @@ if ($help) {
 my $action = shift // '';
 
 # Determine the class
-my $class = $actions{$action} // 'Example::HowAreYou';
+my $class = $actions{$action} // 'Example2::HowAreYou';
 
 # Create object and print message
 my $obj = $class->new;
@@ -65,9 +65,9 @@ print $obj->message . "!\n";
 # my $action = shift // '';  # Get the first argument
 
 # my $class =
-#     $action eq 'hello' ? 'Example::Hello' :
-#     $action eq 'bye'   ? 'Example::Bye'   :
-#     'Example::HowAreYou';
+#     $action eq 'hello' ? 'Example2::Hello' :
+#     $action eq 'bye'   ? 'Example2::Bye'   :
+#     'Example2::HowAreYou';
 
 # my $obj = $class->new;
 # print $obj->message . "!\n";  # Append exclamation

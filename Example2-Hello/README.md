@@ -1,4 +1,4 @@
-# Example::Hello2
+# Example2::Hello
 
 A Perl module with an executable script that prints different messages based on command-line
 arguments.
@@ -11,9 +11,9 @@ arguments.
 ## Usage
 Run the script with an argument:
 ```bash
-example-hello2 hello  # Outputs: Hello World!!
-example-hello2 bye    # Outputs: Goodbye!
-example-hello2        # Outputs: How are you!
+example2-hello hello  # Outputs: Hello World!!
+example2-hello bye    # Outputs: Goodbye!
+example2-hello        # Outputs: How are you!
 ```
 
 ## Testing

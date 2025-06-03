@@ -1,4 +1,4 @@
-package Example::Hello;
+package Example2::Hello;
 
 use strict;
 use warnings;
@@ -13,9 +13,9 @@ __END__
 
 =head1 NAME
 
-Example::Hello - Returns a "Hello World!" message
+Example2::Hello - Returns a "Hello World!" message
 
 =head1 SYNOPSIS
 
-  my $hello = Example::Hello->new;
+  my $hello = Example2::Hello->new;
   print $hello->message;

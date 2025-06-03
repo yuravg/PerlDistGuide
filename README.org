@@ -28,8 +28,8 @@ distributing Perl modules and distributions.
   - [[#documentation][Documentation]]
   - [[#plugin-configuration][Plugin Configuration]]
 - [[#examples][Examples]]
-  - [[#example2-helloworld2][Example2, 'Hello::World2']]
-  - [[#example-hello-basic-script][Example-hello: basic script]]
+  - [[#example1-hello-basic-script][Example1-hello: basic script]]
+  - [[#example2-hello-multi-module-cli][Example2-hello: multi-module, CLI]]
   - [[#example3-helloworld3][Example3, 'Hello::World3']]
   - [[#example4-helloworld4][Example4, 'Hello::World4']]
 :END:
@@ -525,7 +525,7 @@ finder = MyModules
 
 * Examples
 
-** Example-hello: basic script
+** Example1-hello: basic script
 
 Basic executable script that prints "Hello World!" using a simple module structure.
 
@@ -682,7 +682,7 @@ Run the script:
 example1-hello
 #+end_src
 
-** Example2, 'Hello::World2'
+** Example2-hello: multi-module, CLI
 
 Multi-module with command-line arguments supporting different message types.
 
@@ -691,33 +691,33 @@ Multi-module with command-line arguments supporting different message types.
 Create a new distribution skeleton:
 
 #+begin_src shell-script
-dzil new Example::Hello2
+dzil new Example2::Hello
 #+end_src
 
 *Directory Structure(after edit/add files)*
 
 #+begin_src text
-Example-Hello2/
+Example2-Hello/
 ├── README.md
 ├── dist.ini
 ├── bin/
-│   └── example-hello2     # The executable script
+│   └── example2-hello     # The executable script
 ├── lib/
-│   └── Example/
+│   └── Example2/
 │       ├── Hello.pm       # Hello message
 │       ├── Bye.pm         # Goodbye message
 │       └── HowAreYou.pm   # Default message
 └── t/
     ├── 00-basic.t         # Test classes
-    └── hello2.t           # Test script
+    └── hello.t           # Test script
 #+end_src
 
 *** Add README
 
-Edit [[Example-Hello2/README.md]] file:
+Edit [[Example2-Hello/README.md]] file:
 
-#+begin_src markdown :tangle Example-Hello2/README.md :mkdirp yes
-# Example::Hello2
+#+begin_src markdown :tangle Example2-Hello/README.md :mkdirp yes
+# Example2::Hello
 
 A Perl module with an executable script that prints different messages based on command-line
 arguments.
@@ -730,9 +730,9 @@ arguments.
 ## Usage
 Run the script with an argument:
 ```bash
-example-hello2 hello  # Outputs: Hello World!!
-example-hello2 bye    # Outputs: Goodbye!
-example-hello2        # Outputs: How are you!
+example2-hello hello  # Outputs: Hello World!!
+example2-hello bye    # Outputs: Goodbye!
+example2-hello        # Outputs: How are you!
 ```
 
 ## Testing
@@ -741,10 +741,10 @@ Run `dzil test` to execute tests.
 
 *** Add configuration file
 
-Edit [[Example-Hello2/dist.ini]] file:
+Edit [[Example2-Hello/dist.ini]] file:
 
-#+begin_src conf-windows :tangle Example-Hello2/dist.ini :mkdirp yes
-name    = Example-Hello2
+#+begin_src conf-windows :tangle Example2-Hello/dist.ini :mkdirp yes
+name    = Example2-Hello
 author  = Your Name <email@example.com>
 license = Perl_5
 copyright_holder = Your Name
@@ -761,24 +761,24 @@ version = 0.001
 
 *** Add executable script
 
-Edit [[Example-Hello2/bin/example-hello2]] file:
+Edit [[Example2-Hello/bin/example2-hello]] file:
 
-#+begin_src cperl :tangle Example-Hello2/bin/example-hello2 :mkdirp yes
+#+begin_src cperl :tangle Example2-Hello/bin/example2-hello :mkdirp yes
 #!/usr/bin/env perl
 
 use warnings;
 use strict;
 use Getopt::Long;
 
-use Example::Hello;
-use Example::Bye;
-use Example::HowAreYou;
+use Example2::Hello;
+use Example2::Bye;
+use Example2::HowAreYou;
 
 # Available actions
 my %actions = (
-    hello => 'Example::Hello',
-    bye   => 'Example::Bye',
-    how   => 'Example::HowAreYou',
+    hello => 'Example2::Hello',
+    bye   => 'Example2::Bye',
+    how   => 'Example2::HowAreYou',
 );
 
 # Handle help option
@@ -799,7 +799,7 @@ if ($help) {
 my $action = shift // '';
 
 # Determine the class
-my $class = $actions{$action} // 'Example::HowAreYou';
+my $class = $actions{$action} // 'Example2::HowAreYou';
 
 # Create object and print message
 my $obj = $class->new;
@@ -831,9 +831,9 @@ print $obj->message . "!\n";
 # my $action = shift // '';  # Get the first argument
 
 # my $class =
-#     $action eq 'hello' ? 'Example::Hello' :
-#     $action eq 'bye'   ? 'Example::Bye'   :
-#     'Example::HowAreYou';
+#     $action eq 'hello' ? 'Example2::Hello' :
+#     $action eq 'bye'   ? 'Example2::Bye'   :
+#     'Example2::HowAreYou';
 
 # my $obj = $class->new;
 # print $obj->message . "!\n";  # Append exclamation
@@ -841,15 +841,15 @@ print $obj->message . "!\n";
 
 #+begin_src shell-script
 # Add execute permission:
-sudo chmod +x bin/example-hello2
+sudo chmod +x bin/example2-hello
 #+end_src
 
 *** Add module
 
-Edit [[Example-Hello2/lib/Example/Bye.pm]] file:
+Edit [[Example2-Hello/lib/Example2/Bye.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello2/lib/Example/Bye.pm :mkdirp yes
-package Example::Bye;
+#+begin_src cperl :tangle Example2-Hello/lib/Example2/Bye.pm :mkdirp yes
+package Example2::Bye;
 
 use strict;
 use warnings;
@@ -864,13 +864,13 @@ __END__
 
 =head1 NAME
 
-Example::Bye - Returns a "Goodbye" message
+Example2::Bye - Returns a "Goodbye" message
 #+end_src
 
-Edit [[Example-Hello2/lib/Example/Hello.pm]] file:
+Edit [[Example2-Hello/lib/Example2/Hello.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello2/lib/Example/Hello.pm :mkdirp yes
-package Example::Hello;
+#+begin_src cperl :tangle Example2-Hello/lib/Example2/Hello.pm :mkdirp yes
+package Example2::Hello;
 
 use strict;
 use warnings;
@@ -885,18 +885,18 @@ __END__
 
 =head1 NAME
 
-Example::Hello - Returns a "Hello World!" message
+Example2::Hello - Returns a "Hello World!" message
 
 =head1 SYNOPSIS
 
-  my $hello = Example::Hello->new;
+  my $hello = Example2::Hello->new;
   print $hello->message;
 #+end_src
 
-Edit [[Example-Hello2/lib/Example/HowAreYou.pm]] file:
+Edit [[Example2-Hello/lib/Example2/HowAreYou.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello2/lib/Example/HowAreYou.pm :mkdirp yes
-package Example::HowAreYou;
+#+begin_src cperl :tangle Example2-Hello/lib/Example2/HowAreYou.pm :mkdirp yes
+package Example2::HowAreYou;
 
 use strict;
 use warnings;
@@ -911,40 +911,40 @@ __END__
 
 =head1 NAME
 
-Example::HowAreYou - Returns default message
+Example2::HowAreYou - Returns default message
 #+end_src
 
 *** Add tests
 
-Edit [[Example-Hello2/t/00-basic.t]] file:
+Edit [[Example2-Hello/t/00-basic.t]] file:
 
-#+begin_src cperl :tangle Example-Hello2/t/00-basic.t :mkdirp yes
+#+begin_src cperl :tangle Example2-Hello/t/00-basic.t :mkdirp yes
 use Test::More;
-use Example::Hello;
-use Example::Bye;
-use Example::HowAreYou;
+use Example2::Hello;
+use Example2::Bye;
+use Example2::HowAreYou;
 
-my $hello = Example::Hello->new;
+my $hello = Example2::Hello->new;
 is($hello->message, 'Hello World!', 'Hello message works');
 
-my $bye = Example::Bye->new;
+my $bye = Example2::Bye->new;
 is($bye->message, 'Goodbye', 'Bye message works');
 
-my $default = Example::HowAreYou->new;
+my $default = Example2::HowAreYou->new;
 is($default->message, 'How are you', 'Default message works');
 
 done_testing;
 #+end_src
 
-Edit [[Example-Hello2/t/hello2.t]] file:
+Edit [[Example2-Hello/t/hello.t]] file:
 
-#+begin_src cperl :tangle Example-Hello2/t/hello2.t :mkdirp yes
+#+begin_src cperl :tangle Example2-Hello/t/hello.t :mkdirp yes
 use Test::More;
 use Test::Output;
 
-stdout_is { system("bin/example-hello2 hello") } "Hello World!!\n", 'hello arg';
-stdout_is { system("bin/example-hello2 bye") } "Goodbye!\n", 'bye arg';
-stdout_is { system("bin/example-hello2") } "How are you!\n", 'no arg';
+stdout_is { system("bin/example2-hello hello") } "Hello World!!\n", 'hello arg';
+stdout_is { system("bin/example2-hello bye") } "Goodbye!\n", 'bye arg';
+stdout_is { system("bin/example2-hello") } "How are you!\n", 'no arg';
 
 done_testing;
 #+end_src

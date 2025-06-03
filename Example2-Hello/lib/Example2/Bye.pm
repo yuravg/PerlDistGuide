@@ -1,4 +1,4 @@
-package Example::Bye;
+package Example2::Bye;
 
 use strict;
 use warnings;
@@ -13,4 +13,4 @@ __END__
 
 =head1 NAME
 
-Example::Bye - Returns a "Goodbye" message
+Example2::Bye - Returns a "Goodbye" message

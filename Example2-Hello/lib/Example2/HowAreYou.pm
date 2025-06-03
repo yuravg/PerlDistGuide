@@ -1,4 +1,4 @@
-package Example::HowAreYou;
+package Example2::HowAreYou;
 
 use strict;
 use warnings;
@@ -13,4 +13,4 @@ __END__
 
 =head1 NAME
 
-Example::HowAreYou - Returns default message
+Example2::HowAreYou - Returns default message

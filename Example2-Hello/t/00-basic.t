@@ -1,15 +1,15 @@
 use Test::More;
-use Example::Hello;
-use Example::Bye;
-use Example::HowAreYou;
+use Example2::Hello;
+use Example2::Bye;
+use Example2::HowAreYou;
 
-my $hello = Example::Hello->new;
+my $hello = Example2::Hello->new;
 is($hello->message, 'Hello World!', 'Hello message works');
 
-my $bye = Example::Bye->new;
+my $bye = Example2::Bye->new;
 is($bye->message, 'Goodbye', 'Bye message works');
 
-my $default = Example::HowAreYou->new;
+my $default = Example2::HowAreYou->new;
 is($default->message, 'How are you', 'Default message works');
 
 done_testing;
