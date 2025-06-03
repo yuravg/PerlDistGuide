@@ -1,4 +1,4 @@
-# Example::Hello
+# Example1::Hello
 
 A simple Perl module that prints "Hello World!" via an executable script.
 
@@ -10,7 +10,7 @@ A simple Perl module that prints "Hello World!" via an executable script.
 ## Usage
 Run the script:
 ```bash
-example-hello
+example1-hello
 ```
 Output: `Hello World!`
 

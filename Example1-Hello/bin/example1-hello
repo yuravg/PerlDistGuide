@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use Example::Hello;
+use Example1::Hello;
 
 # Call the module's "hello" method and print
-print Example::Hello::hello() . "\n";
+print Example1::Hello::hello() . "\n";

@@ -1,4 +1,4 @@
-package Example::Hello;
+package Example1::Hello;
 use strict;
 use warnings;
 
@@ -13,12 +13,12 @@ __END__
 
 =head1 NAME
 
-Example::Hello - Prints a "Hello World!" message
+Example1::Hello - Prints a "Hello World!" message
 
 =head1 SYNOPSIS
 
-    use Example::Hello;
-    print Example::Hello::hello();
+    use Example1::Hello;
+    print Example1::Hello::hello();
 
 =head1 DESCRIPTION
 

@@ -28,8 +28,8 @@ distributing Perl modules and distributions.
   - [[#documentation][Documentation]]
   - [[#plugin-configuration][Plugin Configuration]]
 - [[#examples][Examples]]
-  - [[#example1-helloworld][Example1, 'Hello::World']]
   - [[#example2-helloworld2][Example2, 'Hello::World2']]
+  - [[#example-hello-basic-script][Example-hello: basic script]]
   - [[#example3-helloworld3][Example3, 'Hello::World3']]
   - [[#example4-helloworld4][Example4, 'Hello::World4']]
 :END:
@@ -525,7 +525,7 @@ finder = MyModules
 
 * Examples
 
-** Example1, 'Hello::World'
+** Example-hello: basic script
 
 Basic executable script that prints "Hello World!" using a simple module structure.
 
@@ -534,19 +534,19 @@ Basic executable script that prints "Hello World!" using a simple module structu
 Create a new distribution skeleton:
 
 #+begin_src shell-script
-dzil new Example::Hello
+dzil new Example1::Hello
 #+end_src
 
 *Directory Structure(after edit/add files)*
 
 #+begin_src text
-Example-Hello/
+Example1-Hello/
 ├── README.md
 ├── dist.ini
 ├── bin/
-│   └── example-hello      # The executable script
+│   └── example1-hello     # The executable script
 ├── lib/
-│   └── Example/
+│   └── Example1/
 │       └── Hello.pm       # Hello message
 └── t/
     └── hello.t            # Test script
@@ -554,10 +554,10 @@ Example-Hello/
 
 *** Add README
 
-Edit [[Example-Hello/README.md]] file:
+Edit [[Example1-Hello/README.md]] file:
 
-#+begin_src markdown :tangle Example-Hello/README.md :mkdirp yes
-# Example::Hello
+#+begin_src markdown :tangle Example1-Hello/README.md :mkdirp yes
+# Example1::Hello
 
 A simple Perl module that prints "Hello World!" via an executable script.
 
@@ -569,7 +569,7 @@ A simple Perl module that prints "Hello World!" via an executable script.
 ## Usage
 Run the script:
 ```bash
-example-hello
+example1-hello
 ```
 Output: `Hello World!`
 
@@ -579,10 +579,10 @@ Run `dzil test` to verify functionality.
 
 *** Edit/Add configuration file
 
-Edit [[Example-Hello/dist.ini]] file:
+Edit [[Example1-Hello/dist.ini]] file:
 
-#+begin_src conf-windows :tangle Example-Hello/dist.ini :mkdirp yes
-name    = Example-Hello
+#+begin_src conf-windows :tangle Example1-Hello/dist.ini :mkdirp yes
+name    = Example1-Hello
 author  = Your Name <email@example.com>
 license = Perl_5
 copyright_holder = Your Name
@@ -602,30 +602,30 @@ Create the executable script:
 
 #+begin_src shell-script
 mkdir bin
-touch bin/example-hello
-sudo chmod +x bin/example-hello
+touch bin/example1-hello
+sudo chmod +x bin/example1-hello
 #+end_src
 
-Edit [[Example-Hello/bin/example-hello]] file:
+Edit [[Example1-Hello/bin/example1-hello]] file:
 
-#+begin_src cperl :tangle Example-Hello/bin/example-hello :mkdirp yes
+#+begin_src cperl :tangle Example1-Hello/bin/example1-hello :mkdirp yes
 #!/usr/bin/env perl
 
 use warnings;
 use strict;
 
-use Example::Hello;
+use Example1::Hello;
 
 # Call the module's "hello" method and print
-print Example::Hello::hello() . "\n";
+print Example1::Hello::hello() . "\n";
 #+end_src
 
 *** Add module
 
-Edit [[Example-Hello/lib/Example/Hello.pm]] file:
+Edit [[Example1-Hello/lib/Example1/Hello.pm]] file:
 
-#+begin_src cperl :tangle Example-Hello/lib/Example/Hello.pm :mkdirp yes
-package Example::Hello;
+#+begin_src cperl :tangle Example1-Hello/lib/Example1/Hello.pm :mkdirp yes
+package Example1::Hello;
 use strict;
 use warnings;
 
@@ -640,12 +640,12 @@ __END__
 
 =head1 NAME
 
-Example::Hello - Prints a "Hello World!" message
+Example1::Hello - Prints a "Hello World!" message
 
 =head1 SYNOPSIS
 
-    use Example::Hello;
-    print Example::Hello::hello();
+    use Example1::Hello;
+    print Example1::Hello::hello();
 
 =head1 DESCRIPTION
 
@@ -654,14 +654,14 @@ A simple module that returns a greeting.
 
 *** Add test
 
-Edit [[Example-Hello/t/hello.t]] file:
+Edit [[Example1-Hello/t/hello.t]] file:
 
-#+begin_src cperl :tangle Example-Hello/t/hello.t :mkdirp yes
+#+begin_src cperl :tangle Example1-Hello/t/hello.t :mkdirp yes
 use Test::More;
 use Test::Output;
 
 # Test the script's output
-stdout_is { system("bin/example-hello") } "Hello World!\n", "Script prints 'Hello World!'";
+stdout_is { system("bin/example1-hello") } "Hello World!\n", "Script prints 'Hello World!'";
 
 done_testing;
 #+end_src
@@ -679,7 +679,7 @@ dzil install
 Run the script:
 
 #+begin_src shell-script
-example-hello
+example1-hello
 #+end_src
 
 ** Example2, 'Hello::World2'
