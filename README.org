@@ -555,7 +555,7 @@ Example1-Hello/
 
 *** Add README
 
-Edit [[Example1-Hello/README.md]] file:
+Edit [[file:Example1-Hello/README.md]] file:
 
 #+begin_src markdown :tangle Example1-Hello/README.md :mkdirp yes
 # Example1::Hello
@@ -580,7 +580,7 @@ Run `dzil test` to verify functionality.
 
 *** Edit/Add configuration file
 
-Edit [[Example1-Hello/dist.ini]] file:
+Edit [[file:Example1-Hello/dist.ini]] file:
 
 #+begin_src conf-windows :tangle Example1-Hello/dist.ini :mkdirp yes
 name    = Example1-Hello
@@ -607,7 +607,7 @@ touch bin/example1-hello
 sudo chmod +x bin/example1-hello
 #+end_src
 
-Edit [[Example1-Hello/bin/example1-hello]] file:
+Edit [[file:Example1-Hello/bin/example1-hello]] file:
 
 #+begin_src cperl :tangle Example1-Hello/bin/example1-hello :mkdirp yes
 #!/usr/bin/env perl
@@ -623,7 +623,7 @@ print Example1::Hello::hello() . "\n";
 
 *** Add module
 
-Edit [[Example1-Hello/lib/Example1/Hello.pm]] file:
+Edit [[file:Example1-Hello/lib/Example1/Hello.pm]] file:
 
 #+begin_src cperl :tangle Example1-Hello/lib/Example1/Hello.pm :mkdirp yes
 package Example1::Hello;
@@ -655,7 +655,7 @@ A simple module that returns a greeting.
 
 *** Add test
 
-Edit [[Example1-Hello/t/hello.t]] file:
+Edit [[file:Example1-Hello/t/hello.t]] file:
 
 #+begin_src cperl :tangle Example1-Hello/t/hello.t :mkdirp yes
 use Test::More;
@@ -715,7 +715,7 @@ Example2-Hello/
 
 *** Add README
 
-Edit [[Example2-Hello/README.md]] file:
+Edit [[file:Example2-Hello/README.md]] file:
 
 #+begin_src markdown :tangle Example2-Hello/README.md :mkdirp yes
 # Example2::Hello
@@ -742,7 +742,7 @@ Run `dzil test` to execute tests.
 
 *** Add configuration file
 
-Edit [[Example2-Hello/dist.ini]] file:
+Edit [[file:Example2-Hello/dist.ini]] file:
 
 #+begin_src conf-windows :tangle Example2-Hello/dist.ini :mkdirp yes
 name    = Example2-Hello
@@ -762,7 +762,7 @@ version = 0.001
 
 *** Add executable script
 
-Edit [[Example2-Hello/bin/example2-hello]] file:
+Edit [[file:Example2-Hello/bin/example2-hello]] file:
 
 #+begin_src cperl :tangle Example2-Hello/bin/example2-hello :mkdirp yes
 #!/usr/bin/env perl
@@ -847,7 +847,7 @@ sudo chmod +x bin/example2-hello
 
 *** Add module
 
-Edit [[Example2-Hello/lib/Example2/Bye.pm]] file:
+Edit [[file:Example2-Hello/lib/Example2/Bye.pm]] file:
 
 #+begin_src cperl :tangle Example2-Hello/lib/Example2/Bye.pm :mkdirp yes
 package Example2::Bye;
@@ -868,7 +868,7 @@ __END__
 Example2::Bye - Returns a "Goodbye" message
 #+end_src
 
-Edit [[Example2-Hello/lib/Example2/Hello.pm]] file:
+Edit [[file:Example2-Hello/lib/Example2/Hello.pm]] file:
 
 #+begin_src cperl :tangle Example2-Hello/lib/Example2/Hello.pm :mkdirp yes
 package Example2::Hello;
@@ -894,7 +894,7 @@ Example2::Hello - Returns a "Hello World!" message
   print $hello->message;
 #+end_src
 
-Edit [[Example2-Hello/lib/Example2/HowAreYou.pm]] file:
+Edit [[file:Example2-Hello/lib/Example2/HowAreYou.pm]] file:
 
 #+begin_src cperl :tangle Example2-Hello/lib/Example2/HowAreYou.pm :mkdirp yes
 package Example2::HowAreYou;
@@ -917,7 +917,7 @@ Example2::HowAreYou - Returns default message
 
 *** Add tests
 
-Edit [[Example2-Hello/t/00-basic.t]] file:
+Edit [[file:Example2-Hello/t/00-basic.t]] file:
 
 #+begin_src cperl :tangle Example2-Hello/t/00-basic.t :mkdirp yes
 use Test::More;
@@ -937,7 +937,7 @@ is($default->message, 'How are you', 'Default message works');
 done_testing;
 #+end_src
 
-Edit [[Example2-Hello/t/hello.t]] file:
+Edit [[file:Example2-Hello/t/hello.t]] file:
 
 #+begin_src cperl :tangle Example2-Hello/t/hello.t :mkdirp yes
 use Test::More;
@@ -985,7 +985,7 @@ Example3-Hello/
 
 *** Add README
 
-Edit [[Example3-Hello/README.md]] file:
+Edit [[file:Example3-Hello/README.md]] file:
 
 #+begin_src markdown :tangle Example3-Hello/README.md :mkdirp yes
 # Example3::Hello
@@ -1018,7 +1018,7 @@ Run `make test`.
 
 *** Add configuration file
 
-Edit [[Example3-Hello/dist.ini]] file:
+Edit [[file:Example3-Hello/dist.ini]] file:
 
 #+begin_src conf-windows :tangle Example3-Hello/dist.ini :mkdirp yes
 name    = Example3-Hello
@@ -1046,7 +1046,7 @@ first_version = 1.2.003
 
 *** Add executable script
 
-Edit [[Example3-Hello/bin/example3-hello]] file:
+Edit [[file:Example3-Hello/bin/example3-hello]] file:
 
 #+begin_src cperl :tangle Example3-Hello/bin/example3-hello :mkdirp yes
 #!/usr/bin/env perl
@@ -1128,7 +1128,7 @@ sudo chmod +x bin/example3-hello
 
 *** Add module
 
-Edit [[Example3-Hello/lib/Example3.pm]] file:
+Edit [[file:Example3-Hello/lib/Example3.pm]] file:
 
 #+begin_src cperl :tangle Example3-Hello/lib/Example3.pm :mkdirp yes
 package Example3;
@@ -1157,7 +1157,7 @@ __END__
 Example3::version - Returns script version
 #+end_src
 
-Edit [[Example3-Hello/lib/Example3/Bye.pm]] file:
+Edit [[file:Example3-Hello/lib/Example3/Bye.pm]] file:
 
 #+begin_src cperl :tangle Example3-Hello/lib/Example3/Bye.pm :mkdirp yes
 package Example3::Bye;
@@ -1180,7 +1180,7 @@ __END__
 Example3::Bye - Returns a "Goodbye" message
 #+end_src
 
-Edit [[Example3-Hello/lib/Example3/Hello.pm]] file:
+Edit [[file:Example3-Hello/lib/Example3/Hello.pm]] file:
 
 #+begin_src cperl :tangle Example3-Hello/lib/Example3/Hello.pm :mkdirp yes
 package Example3::Hello;
@@ -1208,7 +1208,7 @@ Example3::Hello - Returns a "Hello World!" message
   print $hello->message;
 #+end_src
 
-Edit [[Example3-Hello/lib/Example3/HowAreYou.pm]] file:
+Edit [[file:Example3-Hello/lib/Example3/HowAreYou.pm]] file:
 
 #+begin_src cperl :tangle Example3-Hello/lib/Example3/HowAreYou.pm :mkdirp yes
 package Example3::HowAreYou;
@@ -1233,7 +1233,7 @@ Example3::HowAreYou - Returns default message
 
 *** Add tests
 
-Edit [[Example3-Hello/t/00-basic.t]] file:
+Edit [[file:Example3-Hello/t/00-basic.t]] file:
 
 #+begin_src cperl :tangle Example3-Hello/t/00-basic.t :mkdirp yes
 use Test::More;
@@ -1253,7 +1253,7 @@ is($default->message, 'How are you', 'Default message works');
 done_testing;
 #+end_src
 
-[[Example3-Hello/t/hello.t]]
+[[file:Example3-Hello/t/hello.t]]
 
 #+begin_src cperl :tangle Example3-Hello/t/hello.t :mkdirp yes
 use Test::More;
@@ -1268,7 +1268,7 @@ done_testing;
 
 *** FIXME: Add Make-file
 
-Edit [[Example3-Hello/Makefile]] file:
+Edit [[file:Example3-Hello/Makefile]] file:
 
 #+begin_src makefile :tangle Example3-Hello/Makefile :mkdirp yes
 # Makefile for managing a Perl distribution with Dist::Zilla
@@ -1394,7 +1394,7 @@ Example4-Hello/
 
 *** Add README
 
-Edit [[Example4-Hello/README.md]] file:
+Edit [[file:Example4-Hello/README.md]] file:
 
 #+begin_src markdown :tangle Example4-Hello/README.md :mkdirp yes
 # Example4::Hello
@@ -1421,7 +1421,7 @@ Run `dzil test --verbose`.
 
 *** Add configuration file
 
-Edit [[Example4-Hello/dist.ini]] file:
+Edit [[file:Example4-Hello/dist.ini]] file:
 
 #+begin_src conf-windows :tangle Example4-Hello/dist.ini :mkdirp yes
 name    = Example4-Hello
@@ -1460,7 +1460,7 @@ exclude_filename = Makefile.PL
 
 *** Add executable script
 
-Edit [[Example4-Hello/bin/example4-hello]] file:
+Edit [[file:Example4-Hello/bin/example4-hello]] file:
 
 #+begin_src cperl :tangle Example4-Hello/bin/example4-hello :mkdirp yes
 #!/usr/bin/env perl
@@ -1542,7 +1542,7 @@ sudo chmod +x bin/example4-hello
 
 *** Add module
 
-Edit [[Example4-Hello/lib/Example4.pm]] file:
+Edit [[file:Example4-Hello/lib/Example4.pm]] file:
 
 #+begin_src cperl :tangle Example4-Hello/lib/Example4.pm :mkdirp yes
 package Example4;
@@ -1571,7 +1571,7 @@ __END__
 Example4::version - Returns script version
 #+end_src
 
-Edit [[Example4-Hello/lib/Example4/Bye.pm]] file:
+Edit [[file:Example4-Hello/lib/Example4/Bye.pm]] file:
 
 #+begin_src cperl :tangle Example4-Hello/lib/Example4/Bye.pm :mkdirp yes
 package Example4::Bye;
@@ -1594,7 +1594,7 @@ __END__
 Example4::Bye - Returns a "Goodbye" message
 #+end_src
 
-Edit [[Example4-Hello/lib/Example4/Hello.pm]] file:
+Edit [[file:Example4-Hello/lib/Example4/Hello.pm]] file:
 
 #+begin_src cperl :tangle Example4-Hello/lib/Example4/Hello.pm :mkdirp yes
 package Example4::Hello;
@@ -1622,7 +1622,7 @@ Example4::Hello - Returns a "Hello World!" message
   print $hello->message;
 #+end_src
 
-Edit [[Example4-Hello/lib/Example4/HowAreYou.pm]] file:
+Edit [[file:Example4-Hello/lib/Example4/HowAreYou.pm]] file:
 
 #+begin_src cperl :tangle Example4-Hello/lib/Example4/HowAreYou.pm :mkdirp yes
 package Example4::HowAreYou;
@@ -1647,7 +1647,7 @@ Example4::HowAreYou - Returns default message
 
 *** Add tests
 
-Edit [[Example4-Hello/t/00-basic.t]] file:
+Edit [[file:Example4-Hello/t/00-basic.t]] file:
 
 #+begin_src cperl :tangle Example4-Hello/t/00-basic.t :mkdirp yes
 use Test::More;
@@ -1667,7 +1667,7 @@ is($default->message, 'How are you', 'Default message works');
 done_testing;
 #+end_src
 
-[[Example4-Hello/t/hello.t]]
+[[file:Example4-Hello/t/hello.t]]
 
 #+begin_src cperl :tangle Example4-Hello/t/hello.t :mkdirp yes
 use Test::More;
@@ -1682,7 +1682,7 @@ done_testing;
 
 *** Add Makefile.PL
 
-Edit [[Example4-Hello/Makefile.PL]] file:
+Edit [[file:Example4-Hello/Makefile.PL]] file:
 
 #+begin_src cperl :tangle Example4-Hello/Makefile.PL :mkdirp yes
 use ExtUtils::MakeMaker qw(WriteMakefile);
@@ -1745,7 +1745,7 @@ Example5-Hello/
 
 *** Add README
 
-Edit [[Example5-Hello/README.md]] file:
+Edit [[file:Example5-Hello/README.md]] file:
 
 #+begin_src markdown :tangle Example5-Hello/README.md :mkdirp yes
 # Example5::Hello
@@ -1772,7 +1772,7 @@ Run `dzil test --verbose`.
 
 *** Add configuration file
 
-Edit [[Example5-Hello/dist.ini]] file:
+Edit [[file:Example5-Hello/dist.ini]] file:
 
 #+begin_src conf-windows :tangle Example5-Hello/dist.ini :mkdirp yes
 name    = Example5-Hello
@@ -1811,7 +1811,7 @@ exclude_filename = Makefile.PL
 
 *** Add executable script
 
-Edit [[Example5-Hello/bin/example5-hello]] file:
+Edit [[file:Example5-Hello/bin/example5-hello]] file:
 
 #+begin_src cperl :tangle Example5-Hello/bin/example5-hello :mkdirp yes
 #!/usr/bin/env perl
@@ -1835,7 +1835,7 @@ sudo chmod +x bin/example5-hello
 
 *** Add module
 
-Edit [[Example5-Hello/lib/Example5/CLI.pm]] file:
+Edit [[file:Example5-Hello/lib/Example5/CLI.pm]] file:
 
 #+begin_src cperl :tangle Example5-Hello/lib/Example5/CLI.pm :mkdirp yes
 package Example5::CLI;
@@ -1916,7 +1916,7 @@ HELP
 1;
 #+end_src
 
-Edit [[Example5-Hello/lib/Example5/Handler/Bye.pm]] file:
+Edit [[file:Example5-Hello/lib/Example5/Handler/Bye.pm]] file:
 
 #+begin_src cperl :tangle Example5-Hello/lib/Example5/Handler/Bye.pm :mkdirp yes
 package Example5::Handler::Bye;
@@ -1939,7 +1939,7 @@ __END__
 Example5::Handler::Bye - Returns a "Goodbye" message
 #+end_src
 
-Edit [[Example5-Hello/lib/Example5/Handler/Hello.pm]] file:
+Edit [[file:Example5-Hello/lib/Example5/Handler/Hello.pm]] file:
 
 #+begin_src cperl :tangle Example5-Hello/lib/Example5/Handler/Hello.pm :mkdirp yes
 package Example5::Handler::Hello;
@@ -1967,7 +1967,7 @@ Example5::Handler::Hello - Returns a "Hello World!" message
   print $hello->message;
 #+end_src
 
-Edit [[Example5-Hello/lib/Example5/Handler/HowAreYou.pm]] file:
+Edit [[file:Example5-Hello/lib/Example5/Handler/HowAreYou.pm]] file:
 
 #+begin_src cperl :tangle Example5-Hello/lib/Example5/Handler/HowAreYou.pm :mkdirp yes
 package Example5::Handler::HowAreYou;
@@ -1992,7 +1992,7 @@ Example5::Handler::HowAreYou - Returns default message
 
 *** Add tests
 
-Edit [[Example5-Hello/t/00-basic.t]] file:
+Edit [[file:Example5-Hello/t/00-basic.t]] file:
 
 #+begin_src cperl :tangle Example5-Hello/t/00-basic.t :mkdirp yes
 use Test::More;
@@ -2012,7 +2012,7 @@ is($default->message, 'How are you', 'Default message works');
 done_testing;
 #+end_src
 
-[[Example5-Hello/t/hello.t]]
+[[file:Example5-Hello/t/hello.t]]
 
 #+begin_src cperl :tangle Example5-Hello/t/hello.t :mkdirp yes
 use Test::More;
@@ -2027,7 +2027,7 @@ done_testing;
 
 *** Add Makefile.PL
 
-Edit [[Example5-Hello/Makefile.PL]] file:
+Edit [[file:Example5-Hello/Makefile.PL]] file:
 
 #+begin_src cperl :tangle Example5-Hello/Makefile.PL :mkdirp yes
 use ExtUtils::MakeMaker qw(WriteMakefile);
