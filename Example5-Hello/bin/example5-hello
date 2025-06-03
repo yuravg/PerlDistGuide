@@ -1,0 +1,12 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+# use FindBin qw($Bin);
+# use lib "$Bin/../lib";
+use Example5::CLI;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+# Let the CLI module handle everything
+exit Example5::CLI->new()->run(@ARGV);

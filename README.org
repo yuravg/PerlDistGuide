@@ -32,6 +32,7 @@ distributing Perl modules and distributions.
   - [[#example2-hello-multi-module-cli][Example2-hello: multi-module, CLI]]
   - [[#example3-hello-multi-module-cli-makefile][Example3-hello: multi-module, CLI, Makefile]]
   - [[#example4-hello-multi-module-cli-makefilepl][Example4-Hello, multi-module, CLI, Makefile.PL]]
+  - [[#example5-hello-multi-module-with-hierarchical-structure-cli][Example5-Hello, multi-module with hierarchical structure, CLI]]
 :END:
 
 * Overview
@@ -1706,5 +1707,350 @@ WriteMakefile(
     },
     test             => {TESTS => 't/*.t'},
     EXE_FILES        => ['bin/example4-hello'],
+   );
+#+end_src
+
+** Example5-Hello, multi-module with hierarchical structure, CLI
+
+Multi-module with command-line arguments supporting different message types, support Git integration.
+Comprehensive distribution with ExtUtils::MakeMaker compatibility and extensive plugin
+configuration.
+
+*** Create a new distribution
+
+#+begin_src shell-script
+dzil new Example5::Hello
+#+end_src
+
+*Directory Structure(after edit/add files)*
+
+#+begin_src text
+Example5-Hello/
+├── README.md
+├── Makefile.PL
+├── dist.ini
+├── bin/
+│   └── example5-hello            # The executable script
+├── lib/
+│   └── Example5/
+│       └── CLI.pm                # CLI paser, help message
+│            └── Handler/
+│                ├── Hello.pm     # Hello message
+│                ├── Bye.pm       # Goodbye message
+│                └── HowAreYou.pm # Default message
+└── t/
+    ├── 00-basic.t                # Test classes
+    └── hello.t                   # Test script
+#+end_src
+
+*** Add README
+
+Edit [[Example5-Hello/README.md]] file:
+
+#+begin_src markdown :tangle Example5-Hello/README.md :mkdirp yes
+# Example5::Hello
+
+A Perl module with versioning and a script that prints messages based on arguments.
+
+## Installation
+1. Install Dist::Zilla and dependencies.
+2. Run `dzil build`.
+3. Run `dzil install`.
+
+## Usage
+Run the script:
+```bash
+example5-hello hello      # Outputs: Hello World!!
+example5-hello bye        # Outputs: Goodbye!
+example5-hello            # Outputs: How are you!
+example5-hello --version  # Shows version
+```
+
+## Testing
+Run `dzil test --verbose`.
+#+end_src
+
+*** Add configuration file
+
+Edit [[Example5-Hello/dist.ini]] file:
+
+#+begin_src conf-windows :tangle Example5-Hello/dist.ini :mkdirp yes
+name    = Example5-Hello
+author  = Your Name <email@example.com>
+license = Perl_5
+copyright_holder = Your Name
+copyright_year   = 2025
+
+version = 0.001
+
+; Then use OurPkgVersion to insert it into the module files
+[OurPkgVersion]
+
+[GatherDir]
+exclude_filename = Makefile.PL
+
+[AutoPrereqs]
+[PruneCruft]
+[ManifestSkip]
+[MetaYAML]
+[MetaJSON]
+[License]
+[Readme]
+[ExtraTests]
+[ExecDir]
+[ShareDir]
+[MakeMaker]
+[Manifest]
+[TestRelease]
+[ConfirmRelease]
+[UploadToCPAN]
+
+; Testing plugins
+[Test::Compile]
+#+end_src
+
+*** Add executable script
+
+Edit [[Example5-Hello/bin/example5-hello]] file:
+
+#+begin_src cperl :tangle Example5-Hello/bin/example5-hello :mkdirp yes
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+# use FindBin qw($Bin);
+# use lib "$Bin/../lib";
+use Example5::CLI;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+# Let the CLI module handle everything
+exit Example5::CLI->new()->run(@ARGV);
+#+end_src
+
+#+begin_src shell-script
+# Add execute permission:
+sudo chmod +x bin/example5-hello
+#+end_src
+
+*** Add module
+
+Edit [[Example5-Hello/lib/Example5/CLI.pm]] file:
+
+#+begin_src cperl :tangle Example5-Hello/lib/Example5/CLI.pm :mkdirp yes
+package Example5::CLI;
+
+use strict;
+use warnings;
+
+use File::Basename qw(basename);
+
+use Example5::Handler::Hello;
+use Example5::Handler::Bye;
+use Example5::Handler::HowAreYou;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+# ABSTRACT: CLI, help
+
+use Getopt::Long qw(GetOptions);
+
+sub new {
+    my $class = shift;
+    return bless {}, $class;
+}
+
+sub run {
+    my ($self, @args) = @_;
+
+    my $script_name = basename($0);
+
+    my %opts = (
+        hello => 'Example5::Handler::Hello',
+        bye   => 'Example5::Handler::Bye',
+        how   => 'Example5::Handler::HowAreYou',
+       );
+
+    my ($help, $version);
+    GetOptions(
+        'h|help'    => \$help,
+        'v|version' => \$version,
+       );
+
+    if ($version) {
+        my $git_info = `git rev-parse --short HEAD 2>/dev/null` || 'unknown';
+        chomp $git_info;
+        return "$VERSION (commit $git_info)";
+        exit 0;
+    }
+
+    if ($help) {
+        $self->show_help();
+        exit 0;
+    }
+
+    # Get action from command-line argument
+    my $action = shift @ARGV || 'how';
+    my $class  = $opts{$action} // 'Example5::Handler::HowAreYou';
+
+    # Run the selected action
+    my $obj = $class->new;
+    print $obj->message . "!\n";
+}
+
+sub show_help {
+    print <<"HELP";
+Usage: $0 [options] [hello|bye|how]
+
+Options:
+  -h, --help      Show this help message
+  -v, --version   Display the script version
+
+Commands:
+  hello           Say hello
+  bye             Say goodbye
+  how             Ask how are you (default)
+HELP
+}
+
+1;
+#+end_src
+
+Edit [[Example5-Hello/lib/Example5/Handler/Bye.pm]] file:
+
+#+begin_src cperl :tangle Example5-Hello/lib/Example5/Handler/Bye.pm :mkdirp yes
+package Example5::Handler::Bye;
+
+use strict;
+use warnings;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+sub new { bless {}, shift }
+
+sub message { "Goodbye" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example5::Handler::Bye - Returns a "Goodbye" message
+#+end_src
+
+Edit [[Example5-Hello/lib/Example5/Handler/Hello.pm]] file:
+
+#+begin_src cperl :tangle Example5-Hello/lib/Example5/Handler/Hello.pm :mkdirp yes
+package Example5::Handler::Hello;
+
+use strict;
+use warnings;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+sub new { bless {}, shift }
+
+sub message { "Hello World!" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example5::Handler::Hello - Returns a "Hello World!" message
+
+=head1 SYNOPSIS
+
+  my $hello = Example5::Handler::Hello->new;
+  print $hello->message;
+#+end_src
+
+Edit [[Example5-Hello/lib/Example5/Handler/HowAreYou.pm]] file:
+
+#+begin_src cperl :tangle Example5-Hello/lib/Example5/Handler/HowAreYou.pm :mkdirp yes
+package Example5::Handler::HowAreYou;
+
+use strict;
+use warnings;
+
+# VERSION   <- Allows Dist::Zilla to inject the version
+
+sub new { bless {}, shift }
+
+sub message { "How are you" }
+
+1;
+
+__END__
+
+=head1 NAME
+
+Example5::Handler::HowAreYou - Returns default message
+#+end_src
+
+*** Add tests
+
+Edit [[Example5-Hello/t/00-basic.t]] file:
+
+#+begin_src cperl :tangle Example5-Hello/t/00-basic.t :mkdirp yes
+use Test::More;
+use Example5::Handler::Hello;
+use Example5::Handler::Bye;
+use Example5::Handler::HowAreYou;
+
+my $hello = Example5::Handler::Hello->new;
+is($hello->message, 'Hello World!', 'Hello message works');
+
+my $bye = Example5::Handler::Bye->new;
+is($bye->message, 'Goodbye', 'Bye message works');
+
+my $default = Example5::Handler::HowAreYou->new;
+is($default->message, 'How are you', 'Default message works');
+
+done_testing;
+#+end_src
+
+[[Example5-Hello/t/hello.t]]
+
+#+begin_src cperl :tangle Example5-Hello/t/hello.t :mkdirp yes
+use Test::More;
+use Test::Output;
+
+stdout_is { system("bin/example5-hello hello") } "Hello World!!\n", 'hello arg';
+stdout_is { system("bin/example5-hello bye") } "Goodbye!\n", 'bye arg';
+stdout_is { system("bin/example5-hello") } "How are you!\n", 'no arg';
+
+done_testing;
+#+end_src
+
+*** Add Makefile.PL
+
+Edit [[Example5-Hello/Makefile.PL]] file:
+
+#+begin_src cperl :tangle Example5-Hello/Makefile.PL :mkdirp yes
+use ExtUtils::MakeMaker qw(WriteMakefile);
+
+WriteMakefile(
+    NAME             => 'Example5::Hello',
+    AUTHOR           => 'Your Name <your.email@example5.com>',
+    VERSION_FROM     => 'lib/Example5.pm',
+    ABSTRACT_FROM    => 'lib/Example5.pm',
+    LICENSE          => 'perl',
+    MIN_PERL_VERSION => '5.010',
+    PREREQ_PM        => {
+        'strict'          => 0,
+        'warnings'        => 0,
+        'Path::Tiny'      => 0,
+        # Add other dependencies
+    },
+    TEST_REQUIRES    => {
+        'Test::More'        => 0,
+        'Test::Differences' => 0,
+        'Path::Tiny'        => 0,
+    },
+    test             => {TESTS => 't/*.t'},
+    EXE_FILES        => ['bin/example5-hello'],
    );
 #+end_src
