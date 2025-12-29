@@ -40,7 +40,7 @@ sub run {
     if ($version) {
         my $git_info = `git rev-parse --short HEAD 2>/dev/null` || 'unknown';
         chomp $git_info;
-        return "$VERSION (commit $git_info)";
+        print "$VERSION (commit $git_info)\n";
         exit 0;
     }
 
