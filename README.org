@@ -589,12 +589,12 @@ license = Perl_5
 copyright_holder = Your Name
 version = 0.001
 
-[@Basic]
-[AutoPrereqs]
+[@Basic]          ; Core plugin bundle (GatherDir, License, Readme, Manifest, etc.)
+[AutoPrereqs]     ; Automatically detects dependencies from 'use' statements
 
-[ExecDir]
+[ExecDir]         ; Includes executable scripts from bin/ directory
 
-[PkgVersion]
+[PkgVersion]      ; Injects 'our $VERSION = "0.001"' into modules
 #+end_src
 
 *** Add executable script
@@ -753,11 +753,11 @@ copyright_year   = 2025
 
 version = 0.001
 
-[@Basic]
-[AutoPrereqs]
-[ExecDir]
+[@Basic]          ; Core plugin bundle (GatherDir, License, Readme, Manifest, etc.)
+[AutoPrereqs]     ; Automatically detects dependencies from 'use' statements
+[ExecDir]         ; Includes executable scripts from bin/ directory
 
-[PkgVersion]
+[PkgVersion]      ; Injects 'our $VERSION = "0.001"' into modules
 #+end_src
 
 *** Add executable script
@@ -1029,14 +1029,14 @@ copyright_year   = 2025
 
 ; version = 0.002
 
-[@Basic]
-[AutoPrereqs]
+[@Basic]             ; Core plugin bundle (GatherDir, License, Readme, Manifest, etc.)
+[AutoPrereqs]        ; Automatically detects dependencies from 'use' statements
 
-[ExecDir]            ; Includes scripts from bin/
+[ExecDir]            ; Includes executable scripts from bin/ directory
 
-[OurPkgVersion]      ; Automatically sets $VERSION in modules
+[OurPkgVersion]      ; Injects 'our $VERSION' at # VERSION markers in modules
 
-[Git::NextVersion]   ; Optional: Auto-bump versions from git tags
+[Git::NextVersion]   ; Auto-increments version from git tags (v1.2.003, v1.2.004, etc.)
 
 first_version = 1.2.003
 
@@ -1432,30 +1432,41 @@ copyright_year   = 2025
 
 version = 0.001
 
-; Then use OurPkgVersion to insert it into the module files
-[OurPkgVersion]
+; Version injection
+[OurPkgVersion]      ; Injects 'our $VERSION' at # VERSION markers in modules
 
-[GatherDir]
+; File gathering and filtering
+[GatherDir]          ; Collects all files from the distribution directory
 exclude_filename = Makefile.PL
 
-[AutoPrereqs]
-[PruneCruft]
-[ManifestSkip]
-[MetaYAML]
-[MetaJSON]
-[License]
-[Readme]
-[ExtraTests]
-[ExecDir]
-[ShareDir]
-[MakeMaker]
-[Manifest]
-[TestRelease]
-[ConfirmRelease]
-[UploadToCPAN]
+[AutoPrereqs]        ; Automatically detects dependencies from 'use' statements
+[PruneCruft]         ; Removes editor backup files and other cruft
+[ManifestSkip]       ; Excludes files matching MANIFEST.SKIP patterns
+
+; Metadata generation
+[MetaYAML]           ; Generates META.yml for CPAN
+[MetaJSON]           ; Generates META.json for CPAN
+
+; Documentation and licensing
+[License]            ; Generates LICENSE file from license metadata
+[Readme]             ; Generates README from POD documentation
+
+; Testing and execution
+[ExtraTests]         ; Moves xt/ tests to t/ for author testing
+[ExecDir]            ; Includes executable scripts from bin/ directory
+[ShareDir]           ; Includes shared files from share/ directory
+
+; Build system
+[MakeMaker]          ; Generates Makefile.PL for traditional Perl installation
+
+; Distribution management
+[Manifest]           ; Generates MANIFEST file listing all distribution files
+[TestRelease]        ; Runs tests before allowing release
+[ConfirmRelease]     ; Requires confirmation before uploading to CPAN
+[UploadToCPAN]       ; Uploads distribution to CPAN
 
 ; Testing plugins
-[Test::Compile]
+[Test::Compile]      ; Tests that all modules compile correctly
 #+end_src
 
 *** Add executable script
@@ -1783,30 +1794,41 @@ copyright_year   = 2025
 
 version = 0.001
 
-; Then use OurPkgVersion to insert it into the module files
-[OurPkgVersion]
+; Version injection
+[OurPkgVersion]      ; Injects 'our $VERSION' at # VERSION markers in modules
 
-[GatherDir]
+; File gathering and filtering
+[GatherDir]          ; Collects all files from the distribution directory
 exclude_filename = Makefile.PL
 
-[AutoPrereqs]
-[PruneCruft]
-[ManifestSkip]
-[MetaYAML]
-[MetaJSON]
-[License]
-[Readme]
-[ExtraTests]
-[ExecDir]
-[ShareDir]
-[MakeMaker]
-[Manifest]
-[TestRelease]
-[ConfirmRelease]
-[UploadToCPAN]
+[AutoPrereqs]        ; Automatically detects dependencies from 'use' statements
+[PruneCruft]         ; Removes editor backup files and other cruft
+[ManifestSkip]       ; Excludes files matching MANIFEST.SKIP patterns
+
+; Metadata generation
+[MetaYAML]           ; Generates META.yml for CPAN
+[MetaJSON]           ; Generates META.json for CPAN
+
+; Documentation and licensing
+[License]            ; Generates LICENSE file from license metadata
+[Readme]             ; Generates README from POD documentation
+
+; Testing and execution
+[ExtraTests]         ; Moves xt/ tests to t/ for author testing
+[ExecDir]            ; Includes executable scripts from bin/ directory
+[ShareDir]           ; Includes shared files from share/ directory
+
+; Build system
+[MakeMaker]          ; Generates Makefile.PL for traditional Perl installation
+
+; Distribution management
+[Manifest]           ; Generates MANIFEST file listing all distribution files
+[TestRelease]        ; Runs tests before allowing release
+[ConfirmRelease]     ; Requires confirmation before uploading to CPAN
+[UploadToCPAN]       ; Uploads distribution to CPAN
 
 ; Testing plugins
-[Test::Compile]
+[Test::Compile]      ; Tests that all modules compile correctly
 #+end_src
 
 *** Add executable script
