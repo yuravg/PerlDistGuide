@@ -51,11 +51,19 @@ sub run {
 
     # Get action from command-line argument
     my $action = shift @ARGV || 'how';
-    my $class  = $opts{$action} // 'Example5::Handler::HowAreYou';
+
+    # Check if action is valid
+    if (!exists $opts{$action}) {
+        warn "Unknown command: $action\n";
+        $self->show_help();
+        exit 1;
+    }
 
     # Run the selected action
+    my $class = $opts{$action};
     my $obj = $class->new;
     print $obj->message . "!\n";
+    return 0;
 }
 
 sub show_help {
